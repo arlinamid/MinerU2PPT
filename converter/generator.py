@@ -8,6 +8,7 @@ from .utils import extract_background_color, extract_font_color, fill_bbox_with_
 import cv2
 import numpy as np
 import string
+from collections import Counter
 from PIL import ImageFont
 
 
@@ -311,6 +312,46 @@ class PPTGenerator:
 
         return final_chars[::-1]
 
+    def _normalize_font_sizes(self, styles):
+        if not styles:
+            return styles
+
+        i = 0
+        while i < len(styles):
+            j = i
+            while j + 1 < len(styles) and abs(styles[j + 1].font_size - styles[j].font_size) < 3:
+                j += 1
+
+            group = styles[i:j + 1]
+            if group:
+                sizes = [s.font_size for s in group]
+                most_common_size = Counter(sizes).most_common(1)[0][0]
+                for style in group:
+                    style.font_size = most_common_size
+
+            i = j + 1
+
+        return styles
+
+    def _normalize_colors(self, styles, threshold=40):
+        if not styles:
+            return styles
+
+        i = 0
+        while i < len(styles):
+            j = i
+            while j + 1 < len(styles) and np.linalg.norm(np.array(styles[j + 1].color) - np.array(styles[j].color)) < threshold:
+                j += 1
+
+            group = styles[i:j + 1]
+            if group:
+                colors = [tuple(s.color) for s in group]
+                most_common_color = Counter(colors).most_common(1)[0][0]
+                for style in group:
+                    style.color = most_common_color
+            i = j + 1
+        return styles
+
     def _determine_character_styles(self, final_chars, coords, elem_type):
         for char in final_chars:
             height_pts = (char.bbox[3] - char.bbox[1]) * coords['scale_y']
@@ -353,6 +394,8 @@ class PPTGenerator:
                 self._render_by_line(p, all_spans, line_infos, coords, elem.get("type"))
                 return
             final_styles = self._determine_character_styles(corrected_chars, coords, elem.get("type"))
+            final_styles = self._normalize_font_sizes(final_styles)
+            final_styles = self._normalize_colors(final_styles)
             style_iter = iter(final_styles)
             last_style = None
             for char in full_text:
