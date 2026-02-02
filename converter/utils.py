@@ -14,6 +14,8 @@ def pdf_to_images(pdf_path, dpi=300):
         pix = page.get_pixmap(matrix=fitz.Matrix(dpi/72, dpi/72))
         img_data = pix.tobytes("png")
         img = Image.open(io.BytesIO(img_data))
+        if img.mode != 'RGB':
+            img = img.convert('RGB')
         images.append(np.array(img))
     doc.close()
     return images
@@ -39,7 +41,8 @@ def extract_background_color(image, bbox):
 def extract_font_color(image, bbox, bg_color):
     """
     Extracts font color and projection proportions from a bounding box.
-    Returns: (font_color, x_proportion, y_proportion)
+    This version implements an advanced font color selection: it finds the most frequent color,
+    then selects the color from that color's local cluster that has the highest contrast against the background.
     """
     x1, y1, x2, y2 = map(int, bbox)
     h, w = image.shape[:2]
@@ -54,40 +57,46 @@ def extract_font_color(image, bbox, bg_color):
 
     pixels = roi.reshape(-1, 3)
     diff_bg = np.linalg.norm(pixels - bg_color, axis=1)
-    fg_mask = (diff_bg > 60).reshape(roi.shape[:2])
+    fg_pixels = pixels[diff_bg > 80]
 
-    x_scores, y_scores = Counter(), Counter()
-    # Y-axis projection
-    for row in range(roi.shape[0]):
-        if np.any(fg_mask[row, :]):
-            for color in np.unique(roi[row, fg_mask[row, :]], axis=0):
-                y_scores[tuple(color)] += 1
-    # X-axis projection
-    for col in range(roi.shape[1]):
-        if np.any(fg_mask[:, col]):
-            for color in np.unique(roi[fg_mask[:, col], col], axis=0):
-                x_scores[tuple(color)] += 1
+    if fg_pixels.shape[0] == 0:
+        return (0, 0, 0), 0, 0
 
-    # Combine scores to find the best candidate color
-    combined_scores = x_scores + y_scores
-    if not combined_scores:
-        font_color = tuple(map(int, pixels[np.argmax(diff_bg)])) if len(pixels) > 0 else (0,0,0)
-        return font_color, 0, 0
+    # 1. Find the most frequent color to identify the primary color cluster.
+    color_counts = Counter(map(tuple, fg_pixels))
+    if not color_counts:
+        return (0, 0, 0), 0, 0
+    dominant_color = color_counts.most_common(1)[0][0]
 
-    font_color = combined_scores.most_common(1)[0][0]
+    # 2. Create a cluster of candidate colors visually similar to the dominant color.
+    candidate_colors = [
+        color for color in color_counts
+        if np.linalg.norm(np.array(color) - np.array(dominant_color)) < 40
+    ]
 
-    # Calculate proportions
-    x_score = x_scores.get(font_color, 0)
-    y_score = y_scores.get(font_color, 0)
-    total_score = x_score + y_score
+    # 3. From this cluster, select the color with the maximum contrast against the background.
+    if not candidate_colors:
+        font_color = dominant_color
+    else:
+        font_color = max(candidate_colors, key=lambda color: np.linalg.norm(np.array(color) - np.array(bg_color)))
 
-    x_proportion = x_score / total_score if total_score > 0 else 0
-    y_proportion = y_score / total_score if total_score > 0 else 0
+    # 4. Create a precise mask for the final chosen font color to calculate proportions.
+    diff_font = np.linalg.norm(pixels - font_color, axis=1)
+    font_mask = (diff_font < 40).reshape(roi.shape[:2])
+
+    y_projection = np.sum(font_mask, axis=1)
+    x_projection = np.sum(font_mask, axis=0)
+    y_count = np.count_nonzero(y_projection)
+    x_count = np.count_nonzero(x_projection)
+    total_rows, total_cols = roi.shape[:2]
+
+    x_proportion = x_count / total_cols if total_cols > 0 else 0
+    y_proportion = y_count / total_rows if total_rows > 0 else 0
 
     return tuple(map(int, font_color)), x_proportion, y_proportion
 
 
-def get_projection_segments(roi, color, axis, threshold=40, min_count=1, min_length=3):
+def get_projection_segments(roi, color, axis, threshold=80, min_count=1, min_length=3):
     """
     Analyzes an image region of interest (ROI) to find segments of a specific color
     along a given axis (0 for columns/x-axis, 1 for rows/y-axis).

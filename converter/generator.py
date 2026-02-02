@@ -139,108 +139,128 @@ class PPTGenerator:
                     merged_lines.append(curr_line)
             line_infos = merged_lines
 
+        for i, info in enumerate(line_infos):
+            # Define the top of the search area as the bottom of the previous line.
+            info['search_top_y'] = line_infos[i - 1]['range'][1] if i > 0 else bbox[1]
+
         return line_infos
 
     def _detect_raw_characters(self, page_image, line_infos, bbox, coords):
         char_objects = []
         for i, info in enumerate(line_infos):
-            line_bbox = [bbox[0], info['range'][0], bbox[2], info['range'][1]]
-            char_objects.extend(self._detect_characters_from_line(page_image, line_bbox, coords, info['color'], i))
+            tight_bbox = [bbox[0], info['range'][0], bbox[2], info['range'][1]]
+            search_top_y = info['search_top_y']
+            char_objects.extend(
+                self._detect_characters_from_line(page_image, tight_bbox, search_top_y, coords, info['color'], i))
         return char_objects
 
-    def _detect_characters_from_line(self, page_image, bbox, coords, line_color, line_index):
-        x1, y1, x2, y2 = bbox
-        px1, py1, px2, py2 = int(x1 * coords['img_w'] / coords['json_w']), int(
-            y1 * coords['img_h'] / coords['json_h']), int(x2 * coords['img_w'] / coords['json_w']), int(
-            y2 * coords['img_h'] / coords['json_h'])
-        h, w = page_image.shape[:2];
-        px1, py1, px2, py2 = max(0, px1), max(0, py1), min(w, px2), min(h, py2)
-        if px2 <= px1 or py2 <= py1: return []
+    def _detect_characters_from_line(self, page_image, tight_bbox, search_top_y, coords, line_color, line_index):
+        x1, y1, x2, y2 = tight_bbox
+        # Convert JSON coordinates to pixel coordinates for the tight box and the search boundary
+        px1 = int(x1 * coords['img_w'] / coords['json_w'])
+        py1 = int(y1 * coords['img_h'] / coords['json_h'])
+        px2 = int(x2 * coords['img_w'] / coords['json_w'])
+        py2 = int(y2 * coords['img_h'] / coords['json_h'])
+        search_top_py = int(search_top_y * coords['img_h'] / coords['json_h'])
 
-        main_roi = page_image[py1:py2, px1:px2]
-        all_chars = self._segment_characters_in_roi(main_roi, (px1, py1, px2, py2), line_color, line_index, bbox,
-                                                    (px1, py1, px2, py2))
+        h, w = page_image.shape[:2]
+        px1, py1, px2, py2 = max(0, px1), max(0, py1), min(w, px2), min(h, py2)
+        search_top_py = max(0, search_top_py)
+
+        if px2 <= px1 or py2 <= search_top_py:
+            return []
+
+        # Define the single, consistent scaling factors for this line based on the tight box.
+        scale_x = (x2 - x1) / (px2 - px1) if (px2 - px1) > 0 else 0
+        scale_y = (y2 - y1) / (py2 - py1) if (py2 - py1) > 0 else 0
+
+        # Define the region of interest in the image for character searching.
+        search_roi = page_image[search_top_py:py2, px1:px2]
+
+        # Segment main characters within the search ROI.
+        all_chars = self._segment_characters_in_roi(
+            search_roi, (px1, search_top_py), line_color, line_index, tight_bbox, scale_x, scale_y
+        )
 
         if not all_chars:
             return []
-
         sorted_chars = sorted(all_chars, key=lambda c: c.bbox[0])
 
-        gaps = []
-        last_x2 = x1
+        # Find gaps between characters to search for text of a different color.
+        gaps, last_x2 = [], tight_bbox[0]
         for char in sorted_chars:
-            if char.bbox[0] > last_x2:
-                gaps.append((last_x2, char.bbox[0]))
+            if char.bbox[0] > last_x2: gaps.append((last_x2, char.bbox[0]))
             last_x2 = char.bbox[2]
-        if x2 > last_x2:
-            gaps.append((last_x2, x2))
+        if tight_bbox[2] > last_x2: gaps.append((last_x2, tight_bbox[2]))
 
         recovered_chars = []
         scale_x_inv = (px2 - px1) / (x2 - x1) if (x2 - x1) > 0 else 0
-        min_gap_width = max((py2 - py1) * 2, 6)
-
         for gap_x1, gap_x2 in gaps:
             gap_px1 = px1 + int((gap_x1 - x1) * scale_x_inv)
             gap_px2 = px1 + int((gap_x2 - x1) * scale_x_inv)
 
-            # Optimization: Skip gaps that are too narrow to contain a character before expensive processing.
-            if gap_px2 - gap_px1 < min_gap_width:
-                continue
+            # Shrink the search box by 5 pixels on each side to avoid edge artifacts from the primary font.
+            gap_px1 += 5
+            gap_px2 -= 5
 
-            gap_roi = page_image[py1:py2, gap_px1:gap_px2]
+            if gap_px2 - gap_px1 < 30: continue
+            gap_roi = page_image[search_top_py:py2, gap_px1:gap_px2]
             if gap_roi.size == 0: continue
 
-            gap_bg = extract_background_color(page_image, [gap_px1, py1, gap_px2, py2])
-            new_font_color, x_prop, y_prop = extract_font_color(page_image, [gap_px1, py1, gap_px2, py2], gap_bg)
+            gap_bg = extract_background_color(page_image, [gap_px1, search_top_py, gap_px2, py2])
+            new_font_color, x_prop, y_prop = extract_font_color(page_image,
+                                                                [gap_px1, search_top_py, gap_px2, py2], gap_bg)
 
-            if (x_prop > 0.5 or y_prop > 0.5) and np.linalg.norm(
-                    np.array(new_font_color) - np.array(line_color)) > 50:
-                # For text of different colors, which may have a different height,
-                # first use y-axis projection to adjust py1. Assumes bottom-alignment.
+            if max(x_prop, y_prop) > 0.15 and np.linalg.norm(np.array(new_font_color) - np.array(line_color)) > 50:
                 segments = get_projection_segments(gap_roi, new_font_color, axis=1)
 
                 if segments:
-                    local_py1 = segments[0][0]
-                    adjusted_py1 = py1 + local_py1
-                    adjusted_gap_roi = page_image[adjusted_py1:py2, gap_px1:gap_px2]
+                    # Find the tallest segment, as it's the most likely candidate for the actual line of text.
+                    best_segment = max(segments, key=lambda s: s[1] - s[0])
+                    segment_height = best_segment[1] - best_segment[0]
 
-                    if adjusted_gap_roi.size > 0:
-                        recovered_chars.extend(
-                            self._segment_characters_in_roi(adjusted_gap_roi, (gap_px1, adjusted_py1, gap_px2, py2),
-                                                            new_font_color, line_index, bbox, (px1, py1, px2, py2)))
+                    if segment_height >= 8:
+                        local_py1 = best_segment[0]
+                        adjusted_roi_py1 = search_top_py + local_py1
+                        adjusted_gap_roi = page_image[adjusted_roi_py1:py2, gap_px1:gap_px2]
 
+                        if adjusted_gap_roi.size > 0:
+                            new_tight_y1 = search_top_y + (adjusted_roi_py1 - search_top_py) * scale_y
+                            new_tight_bbox = [gap_x1, new_tight_y1, gap_x2, y2]
+                            recovered_chars.extend(
+                                self._segment_characters_in_roi(
+                                    adjusted_gap_roi, (gap_px1, adjusted_roi_py1), new_font_color, line_index,
+                                    new_tight_bbox, scale_x, scale_y
+                                )
+                            )
         if recovered_chars:
             all_chars.extend(recovered_chars)
             all_chars.sort(key=lambda c: c.bbox[0])
-
         return all_chars
 
-    def _segment_characters_in_roi(self, roi, roi_bbox, color, base_line_index, line_json_bbox, line_pixel_bbox):
-        local_px1, local_py1, local_px2, local_py2 = roi_bbox
-        x1, y1, x2, y2 = line_json_bbox
-        px1, py1, px2, py2 = line_pixel_bbox
-
+    def _segment_characters_in_roi(self, roi, roi_start_pixels, color, line_index, tight_json_bbox, scale_x, scale_y):
+        roi_px1, roi_py1 = roi_start_pixels
         initial_chars_px = get_projection_segments(roi, color, axis=0, min_length=2)
         char_objects = []
+        if not initial_chars_px: return []
 
-        # Calculate scales based on the overall line dimensions
-        scale_x = (x2 - x1) / (px2 - px1) if (px2 - px1) > 0 else 0
-        scale_y = (y2 - y1) / (py2 - py1) if (py2 - py1) > 0 else 0
+        min_char_width = 8
+        char_json_y1 = tight_json_bbox[1]
+        char_json_y2 = tight_json_bbox[3]
 
-        # Calculate the JSON y-coordinates corresponding to the ROI's vertical bounds
-        char_json_y1 = y1 + (local_py1 - py1) * scale_y
-        char_json_y2 = y1 + (local_py2 - py1) * scale_y
+        # Get the pixel x-coordinate of the tight bbox's left edge to use as a reference.
+        tight_px1 = int(tight_json_bbox[0] / scale_x if scale_x else 0)
 
         for sx, ex in initial_chars_px:
-            # Calculate JSON x-coordinates for the character
-            char_json_x1 = x1 + (local_px1 - px1 + sx) * scale_x
-            char_json_x2 = x1 + (local_px1 - px1 + ex) * scale_x
+            if ex - sx < min_char_width: continue
 
+            # Calculate final JSON x-coordinates relative to the tight box's origin and the consistent scales.
+            char_json_x1 = tight_json_bbox[0] + (roi_px1 - tight_px1 + sx) * scale_x
+            char_json_x2 = tight_json_bbox[0] + (roi_px1 - tight_px1 + ex) * scale_x
             char_bbox = [char_json_x1, char_json_y1, char_json_x2, char_json_y2]
-            char_objects.append(Character(bbox=char_bbox, color=color, line_index=base_line_index))
+            char_objects.append(Character(bbox=char_bbox, color=color, line_index=line_index))
 
         return char_objects
-
 
     def _analyze_and_correct_bboxes(self, char_objects, full_text, coords):
         non_space_chars = [c for c in full_text if c not in " \n"]
@@ -255,7 +275,14 @@ class PPTGenerator:
         try:
             font = ImageFont.truetype("msyh.ttc", size=30)
             ideal_height = 30
-            ideal_char_ratios = [(font.getlength(c) / ideal_height) for c in non_space_chars]
+            # Define full-width punctuation marks which have a narrower visual width.
+            full_width_punctuation = "，。、；：？！（）【】“”‘’《》"
+            ideal_char_ratios = []
+            for c in non_space_chars:
+                if c in full_width_punctuation:
+                    ideal_char_ratios.append(0.3)
+                else:
+                    ideal_char_ratios.append(font.getlength(c) / ideal_height)
         except IOError:
             return chars
 
@@ -340,7 +367,8 @@ class PPTGenerator:
         i = 0
         while i < len(styles):
             j = i
-            while j + 1 < len(styles) and np.linalg.norm(np.array(styles[j + 1].color) - np.array(styles[j].color)) < threshold:
+            while j + 1 < len(styles) and np.linalg.norm(
+                    np.array(styles[j + 1].color) - np.array(styles[j].color)) < threshold:
                 j += 1
 
             group = styles[i:j + 1]
@@ -354,14 +382,28 @@ class PPTGenerator:
 
     def _determine_character_styles(self, final_chars, coords, elem_type):
         for char in final_chars:
-            height_pts = (char.bbox[3] - char.bbox[1]) * coords['scale_y']
+            height_pts = (char.bbox[3] - char.bbox[1]) * 0.95 * coords['scale_y']
             char.font_size = int(max(height_pts, 6.0))
             char.bold = elem_type == "title"
         return final_chars
 
+    def _draw_debug_boxes_for_page(self, image, all_chars, coords, output_path):
+        """Draws bounding boxes for an entire page's characters for debugging."""
+        debug_img = image.copy()
+        for char in all_chars:
+            bbox = char.bbox
+            px_box = [
+                int(bbox[0] * coords['img_w'] / coords['json_w']),
+                int(bbox[1] * coords['img_h'] / coords['json_h']),
+                int(bbox[2] * coords['img_w'] / coords['json_w']),
+                int(bbox[3] * coords['img_h'] / coords['json_h'])
+            ]
+            cv2.rectangle(debug_img, (px_box[0], px_box[1]), (px_box[2], px_box[3]), (0, 0, 255), 2)  # Red box
+        cv2.imwrite(output_path, cv2.cvtColor(debug_img, cv2.COLOR_RGB2BGR))
+
     def _process_text(self, slide, elem, page_image, coords):
         bbox = elem.get("bbox");
-        if not bbox: return
+        if not bbox: return None, None
         txBox = self._create_textbox(slide, bbox, coords)
         tf = txBox.text_frame;
         tf.clear();
@@ -371,28 +413,30 @@ class PPTGenerator:
         p.alignment = PP_ALIGN.LEFT
         all_spans = [s for l in elem.get("lines", []) for s in l.get("spans", [])] if "lines" in elem else elem.get(
             "spans", [])
-        if not all_spans: p.text = elem.get("text", ""); return
+        if not all_spans: p.text = elem.get("text", ""); return None, None
         if all_spans:
             first_span_content = all_spans[0].get("content", "")
             if first_span_content.lstrip().startswith('-'):
                 cleaned_content = first_span_content.lstrip(' \t\n\r\f\v-•*·')
                 all_spans[0]["content"] = "• " + cleaned_content
         full_text = "".join([s.get("content", "").replace('\\%', '%') for s in all_spans])
-        if not full_text.strip(): return
+        if not full_text.strip(): return None, None
         print(f"\n--- Processing Text ---\nContent: '{full_text.strip()[:100]}...'")
+        raw_chars, corrected_chars = None, None
         try:
             line_infos = self._get_line_ranges(page_image, bbox, coords)
             print(f"Detected lines: {len(line_infos)}")
             if not line_infos: raise ValueError("No lines detected.")
             raw_chars = self._detect_raw_characters(page_image, line_infos, bbox, coords)
             corrected_chars = self._analyze_and_correct_bboxes(raw_chars, full_text, coords)
+
             non_space_chars = [c for c in full_text if c not in " \n"]
             can_align = len(corrected_chars) == len(non_space_chars)
             print(f"Character alignment successful: {can_align}")
             print(f"Using char-by-char styling (mixed layout support): {can_align}")
             if not can_align:
                 self._render_by_line(p, all_spans, line_infos, coords, elem.get("type"))
-                return
+                return raw_chars, corrected_chars
             final_styles = self._determine_character_styles(corrected_chars, coords, elem.get("type"))
             final_styles = self._normalize_font_sizes(final_styles)
             final_styles = self._normalize_colors(final_styles)
@@ -418,6 +462,7 @@ class PPTGenerator:
             sp = txBox.element;
             sp.getparent().remove(sp)
             self._render_spans_in_bbox(slide, all_spans, bbox, page_image, coords, elem_type=elem.get("type"))
+        return raw_chars, corrected_chars
 
     def _render_by_line(self, paragraph, all_spans, line_infos, coords, elem_type):
         span_idx = 0
@@ -462,14 +507,17 @@ class PPTGenerator:
         color, _, _ = extract_font_color(page_image, bbox, bg_color)
         font.color.rgb = RGBColor(*color)
 
-    def _process_list(self, slide, elem, page_image, coords):
+    def _process_list(self, slide, elem, page_image, coords, page_char_lists=None):
         for block in elem.get("blocks", []):
             spans = [s for l in block.get("lines", []) for s in l.get("spans", [])] if "lines" in block else block.get(
                 "spans", [])
             if spans:
                 spans.sort(key=lambda s: (s.get("bbox", [0, 0, 0, 0])[1], s.get("bbox", [0, 0, 0, 0])[0]))
                 spans[0]["content"] = "• " + spans[0].get("content", "").lstrip(' ·-*•')
-                self._process_text(slide, block, page_image, coords)
+                raw_chars, corrected_chars = self._process_text(slide, block, page_image, coords)
+                if page_char_lists is not None:
+                    if raw_chars: page_char_lists['raw'].extend(raw_chars)
+                    if corrected_chars: page_char_lists['corrected'].extend(corrected_chars)
 
     def _process_image(self, slide, elem, page_image, coords, text_elements):
         bbox = elem.get("bbox")
@@ -498,16 +546,19 @@ class PPTGenerator:
             slide.shapes.add_picture(path, left, top, w, h);
             os.remove(path)
 
-    def _process_element(self, slide, elem, page_image, coords, text_elements=None):
+    def _process_element(self, slide, elem, page_image, coords, text_elements=None, page_char_lists=None):
         cat = elem.get("type", "text")
         if cat == "list":
-            self._process_list(slide, elem, page_image, coords)
+            self._process_list(slide, elem, page_image, coords, page_char_lists=page_char_lists)
         elif cat in ["text", "title", "caption", "footnote", "footer", "header", "page_number"]:
-            self._process_text(slide, elem, page_image, coords)
+            raw_chars, corrected_chars = self._process_text(slide, elem, page_image, coords)
+            if page_char_lists is not None:
+                if raw_chars: page_char_lists['raw'].extend(raw_chars)
+                if corrected_chars: page_char_lists['corrected'].extend(corrected_chars)
         elif cat in ["image", "table", "formula", "figure"]:
             self._process_image(slide, elem, page_image, coords, text_elements or [])
 
-    def process_page(self, slide, elements, page_image, page_size=None):
+    def process_page(self, slide, elements, page_image, page_size=None, page_index=0):
         img_h, img_w = page_image.shape[:2]
         json_w, json_h = page_size if page_size and all(page_size) else (img_w * 72 / 300, img_h * 72 / 300)
         w_pts, h_pts = self.cap_size(json_w, json_h)
@@ -531,36 +582,38 @@ class PPTGenerator:
         slide.shapes.add_picture(bg_path, Pt(0), Pt(0), Pt(w_pts), Pt(h_pts));
         os.remove(bg_path)
         for elem in img_elems: self._process_element(slide, elem, original_img, coords, text_elements=text_elems)
-        for elem in text_elems: self._process_element(slide, elem, original_img, coords)
+
+        page_chars = {'raw': [], 'corrected': []}
+        for elem in text_elems: self._process_element(slide, elem, original_img, coords, page_char_lists=page_chars)
+
+        # Generate page-level debug images
+        self._draw_debug_boxes_for_page(original_img, page_chars['raw'], coords, f"tmp/page_{page_index}_raw.png")
+        self._draw_debug_boxes_for_page(original_img, page_chars['corrected'], coords, f"tmp/page_{page_index}_corrected.png")
 
     def save(self):
         self.prs.save(self.output_path)
 
 
-def convert_mineru_to_ppt(json_path, pdf_path, output_ppt_path, debug=False):
+def convert_mineru_to_ppt(json_path, pdf_path, output_ppt_path):
     from .utils import pdf_to_images
     DPI = 300
     with open(json_path, 'r', encoding='utf-8') as f:
         data = json.load(f)
 
-    def _generate(output_path, cleanup):
-        images = pdf_to_images(pdf_path, dpi=DPI)
-        gen = PPTGenerator(output_path, perform_cleanup=cleanup)
-        pages = data if isinstance(data, list) else next(
-            (data[k] for k in ["pdf_info", "pages"] if k in data and isinstance(data[k], list)), [data])
-        print(f"[{'CLEANUP' if cleanup else 'DEBUG'}] Found {len(pages)} pages.")
-        for i, page_data in enumerate(pages):
-            if i >= len(images): break
-            print(f"Processing page {i + 1}/{len(pages)}...")
-            page_img = images[i].copy()
-            if i == 0: gen.set_slide_size(page_img.shape[1], page_img.shape[0], dpi=DPI)
-            slide = gen.add_slide()
-            elements = [item for key in ["para_blocks", "images", "tables"] for item in page_data.get(key, [])]
-            page_size = page_data.get("page_size") or (page_data.get("page_info", {}).get("width"),
-                                                       page_data.get("page_info", {}).get("height"))
-            gen.process_page(slide, elements, page_img, page_size=page_size)
-        gen.save()
-        print(f"Saved to {output_path}")
-
-    _generate(output_ppt_path, True)
-    if debug: _generate(output_ppt_path.replace(".pptx", "_debug.pptx"), False)
+    images = pdf_to_images(pdf_path, dpi=DPI)
+    gen = PPTGenerator(output_ppt_path, perform_cleanup=True)
+    pages = data if isinstance(data, list) else next(
+        (data[k] for k in ["pdf_info", "pages"] if k in data and isinstance(data[k], list)), [data])
+    print(f"[CLEANUP] Found {len(pages)} pages.")
+    for i, page_data in enumerate(pages):
+        if i >= len(images): break
+        print(f"Processing page {i + 1}/{len(pages)}...")
+        page_img = images[i].copy()
+        if i == 0: gen.set_slide_size(page_img.shape[1], page_img.shape[0], dpi=DPI)
+        slide = gen.add_slide()
+        elements = [item for key in ["para_blocks", "images", "tables"] for item in page_data.get(key, [])]
+        page_size = page_data.get("page_size") or (page_data.get("page_info", {}).get("width"),
+                                                   page_data.get("page_info", {}).get("height"))
+        gen.process_page(slide, elements, page_img, page_size=page_size, page_index=i)
+    gen.save()
+    print(f"Saved to {output_ppt_path}")

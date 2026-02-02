@@ -1,24 +1,29 @@
 import argparse
 import os
 import sys
+import shutil
 from converter.generator import convert_mineru_to_ppt
 from converter.utils import pdf_to_images
 from evaluator.checker import ppt_to_images, calculate_similarity, create_comparison
 
 def main():
+    # Clean up temp directory before run
+    if os.path.exists("tmp"):
+        shutil.rmtree("tmp")
+    os.makedirs("tmp")
+
     parser = argparse.ArgumentParser(description="MinerU PDF/Image to PPT Converter")
     parser.add_argument("--json", required=True, help="Path to MinerU JSON file")
     parser.add_argument("--pdf", required=True, help="Path to original PDF/Image file")
     parser.add_argument("--output", required=True, help="Path to output PPT file")
     parser.add_argument("--eval", action="store_true", help="Run evaluation after conversion")
-    parser.add_argument("--debug", action="store_true", help="Generate an additional debug PPT without background cleaning.")
     parser.add_argument("--eval-dir", default="eval_output", help="Directory for evaluation images")
 
     args = parser.parse_args()
 
     print(f"Converting {args.pdf} to {args.output}...")
     try:
-        convert_mineru_to_ppt(args.json, args.pdf, args.output, debug=args.debug)
+        convert_mineru_to_ppt(args.json, args.pdf, args.output)
         print("Conversion successful.")
     except Exception as e:
         print(f"Error during conversion: {e}")
