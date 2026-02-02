@@ -1,0 +1,7 @@
+python-pptx
+pymupdf
+opencv-python
+numpy
+Pillow
+scikit-image
+pywin32
