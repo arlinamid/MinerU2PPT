@@ -1,0 +1,69 @@
+MIT License
+
+Copyright (c) 2026 arlinamid
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+---
+
+## Third-Party Acknowledgments
+
+This software is inspired by and extends the original MinerU2PPT project:
+- Original Repository: https://github.com/JuniverseCoder/MinerU2PPT
+- Original Author: JuniverseCoder
+- Original License: Please refer to the original repository for licensing terms
+
+## Dependencies
+
+This software makes use of various open-source libraries and services:
+
+### Python Libraries
+- python-pptx: Apache Software License
+- PyMuPDF: AGPL-3.0 License
+- opencv-python: Apache-2.0 License
+- numpy: BSD License
+- Pillow: PIL Software License
+- tkinterdnd2: MIT License
+- streamlit: Apache-2.0 License
+- scikit-image: BSD License
+
+### AI Service APIs
+- OpenAI API: Subject to OpenAI's Terms of Service
+- Google Gemini API: Subject to Google's Terms of Service
+- Anthropic Claude API: Subject to Anthropic's Terms of Service
+- Groq API: Subject to Groq's Terms of Service
+
+### External Services
+- MinerU PDF Extractor: Subject to MinerU's Terms of Service
+- GitHub: For repository hosting and release distribution
+- Buy Me a Coffee: For developer support platform
+
+## Attribution Requirements
+
+When using this software, please maintain:
+1. This license notice in all copies or substantial portions of the Software
+2. Attribution to both this enhanced version and the original inspiration
+3. Compliance with all third-party library and service terms
+
+## Disclaimer
+
+This enhanced version significantly extends the original concept with new features,
+AI integration, multi-language support, and professional documentation while
+maintaining proper attribution to the original work. The enhancements are
+original contributions and are licensed under the MIT License as stated above.

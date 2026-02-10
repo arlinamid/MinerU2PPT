@@ -1,5 +1,11 @@
 [简体中文](README_zh.md)
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Release](https://img.shields.io/github/v/release/arlinamid/MinerU2PPT)](https://github.com/arlinamid/MinerU2PPT/releases)
+[![Downloads](https://img.shields.io/github/downloads/arlinamid/MinerU2PPT/total)](https://github.com/arlinamid/MinerU2PPT/releases)
+[![Stars](https://img.shields.io/github/stars/arlinamid/MinerU2PPT)](https://github.com/arlinamid/MinerU2PPT/stargazers)
+[![Issues](https://img.shields.io/github/issues/arlinamid/MinerU2PPT)](https://github.com/arlinamid/MinerU2PPT/issues)
+
 # MinerU to PPTX Converter
 
 This tool converts PDF files and images into editable PowerPoint presentations (`.pptx`) by leveraging structured data from the [MinerU PDF Extractor](https://mineru.net/OpenSourceTools/Extractor). It accurately reconstructs text, images, and layout, providing a high-fidelity, editable version of the original document.
@@ -106,6 +112,24 @@ For comprehensive documentation, please visit the **[docs/](docs/)** folder:
 - **[🤖 AI Integration Guide](docs/CLAUDE.md)** - AI services configuration and usage
 - **[🌍 Translation System](docs/TRANSLATION_SYSTEM.md)** - Multi-language support details
 - **[📋 All Documentation](docs/README.md)** - Complete documentation index
+
+## 📝 Changelog
+
+All notable changes to this project are documented in **[CHANGELOG.md](CHANGELOG.md)**:
+
+- **[v2.0.0 (Latest)](CHANGELOG.md#200---2026-02-10)** - Major release with AI integration, multi-language support, and professional GUI
+- **[All Versions](CHANGELOG.md)** - Complete version history and feature additions
+- **[Planned Features](CHANGELOG.md#unreleased)** - Upcoming enhancements and roadmap
+
+## 📄 License
+
+This project is licensed under the **MIT License** - see the **[LICENSE](LICENSE)** file for details.
+
+### Attribution
+This enhanced version is inspired by and extends [JuniverseCoder's original MinerU2PPT](https://github.com/JuniverseCoder/MinerU2PPT). The significant enhancements (AI integration, multi-language support, professional GUI, comprehensive documentation) are original contributions licensed under MIT.
+
+### Third-Party
+This software uses various open-source libraries and AI services. Please see the [LICENSE](LICENSE) file for complete attribution and third-party acknowledgments.
 
 ## 💖 Support
 
