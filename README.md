@@ -16,6 +16,27 @@ The application features a user-friendly graphical interface (GUI) and is design
 
 ![GUI Screenshot](img/gui.png)
 
+## 🚀 Quick Start
+
+### Step 1: Get MinerU JSON Data
+Choose your preferred method to extract document structure:
+
+**🌐 Web-based (Recommended)**
+- Visit: [MinerU PDF Extractor](https://mineru.net/OpenSourceTools/Extractor)
+- Upload your PDF/image → Download JSON
+
+**💻 Desktop App** 
+- Download: [MinerU Desktop App](https://webpub.shlab.tech/MinerU/latest/win/MinerU-0.12.0-setup.exe?t=1)
+- Install → Process files → Export JSON
+
+### Step 2: Download MinerU2PPTX
+- Get the latest [MinerU2PPTX.exe](https://github.com/arlinamid/MinerU2PPT/releases) (no installation needed)
+
+### Step 3: Convert
+- Run MinerU2PPTX.exe → Select your original file + JSON → Convert!
+
+---
+
 ## For Users: How to Use
 
 As a user, you only need the standalone executable file (e.g., `MinerU2PPT.exe`). You do not need to install Python or any libraries.
@@ -23,9 +44,20 @@ As a user, you only need the standalone executable file (e.g., `MinerU2PPT.exe`)
 1.  **Download the Application**: Get the latest executable from the project's [Releases page](https://github.com/YOUR_USERNAME/YOUR_REPO/releases).
 
 2.  **Get the MinerU JSON File**:
-    -   Go to the [MinerU PDF/Image Extractor](https://mineru.net/OpenSourceTools/Extractor).
-    -   Upload your PDF or image file and let it process.
-    -   Download the resulting JSON file. This file contains the structural information that our tool needs for the conversion.
+    
+    You have two options to extract the JSON data needed for conversion:
+    
+    **Option A: Web-based Extractor (Recommended)**
+    -   Visit the [MinerU PDF/Image Extractor](https://mineru.net/OpenSourceTools/Extractor) website
+    -   Upload your PDF or image file and let it process
+    -   Download the resulting JSON file
+    
+    **Option B: Desktop Application**
+    -   Download the [MinerU Desktop App](https://webpub.shlab.tech/MinerU/latest/win/MinerU-0.12.0-setup.exe?t=1) (Windows)
+    -   Install and run the application locally
+    -   Process your PDF/image files to generate JSON data
+    
+    The JSON file contains the structural information that our tool needs for accurate conversion.
     ![Download JSON](img/download_json.png)
 
 3.  **Run the Converter**:

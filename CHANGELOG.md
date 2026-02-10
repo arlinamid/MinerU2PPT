@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Enhanced MinerU Integration**: Added direct links to MinerU Desktop App download
+- **Multiple MinerU Options**: Web-based extractor vs Desktop application choices
+- **Improved Documentation**: Updated all user guides with both MinerU access methods
+
 ### Planned
 - Additional AI providers integration
 - More language support (German, French, Spanish)

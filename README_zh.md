@@ -14,6 +14,27 @@
 
 ![GUI Screenshot](img/gui.png)
 
+## 🚀 快速开始
+
+### 第一步：获取 MinerU JSON 数据
+选择您喜欢的方式提取文档结构：
+
+**🌐 网页版（推荐）**
+- 访问：[MinerU PDF 提取器](https://mineru.net/OpenSourceTools/Extractor)
+- 上传PDF/图像 → 下载JSON
+
+**💻 桌面应用** 
+- 下载：[MinerU 桌面应用](https://webpub.shlab.tech/MinerU/latest/win/MinerU-0.12.0-setup.exe?t=1)
+- 安装 → 处理文件 → 导出JSON
+
+### 第二步：下载 MinerU2PPTX
+- 获取最新的 [MinerU2PPTX.exe](https://github.com/arlinamid/MinerU2PPT/releases)（无需安装）
+
+### 第三步：转换
+- 运行 MinerU2PPTX.exe → 选择原始文件 + JSON → 开始转换！
+
+---
+
 ## 用户指南：如何使用
 
 作为普通用户，您只需要独立的 `MinerU2PPT.exe` 文件。您无需安装 Python 或任何编程库。
@@ -21,9 +42,20 @@
 1.  **下载应用程序**: 从本项目的 [Releases 页面](https://github.com/YOUR_USERNAME/YOUR_REPO/releases) 下载最新的 `.exe` 可执行文件。
 
 2.  **获取 MinerU JSON 文件**:
-    -   访问 [MinerU PDF/图片提取器](https://mineru.net/OpenSourceTools/Extractor)。
-    -   上传您的 PDF 或图片文件，等待其处理完成。
-    -   下载生成的 JSON 文件。该文件包含了您的文档结构信息，是本工具进行转换所必需的。
+    
+    您有两种方式来提取转换所需的JSON数据：
+    
+    **方式A: 网页版提取器（推荐）**
+    -   访问 [MinerU PDF/图片提取器](https://mineru.net/OpenSourceTools/Extractor) 网站
+    -   上传您的PDF或图片文件，等待其处理完成
+    -   下载生成的JSON文件
+    
+    **方式B: 桌面应用程序**
+    -   下载 [MinerU 桌面应用](https://webpub.shlab.tech/MinerU/latest/win/MinerU-0.12.0-setup.exe?t=1)（Windows版）
+    -   本地安装并运行应用程序
+    -   处理您的PDF/图片文件以生成JSON数据
+    
+    JSON文件包含了本工具进行准确转换所需的文档结构信息。
     ![下载 JSON](img/download_json.png)
 
 3.  **运行转换器**:
