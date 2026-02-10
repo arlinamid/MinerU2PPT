@@ -1,8 +1,10 @@
 [简体中文](README_zh.md)
 
-# MinerU to PPT Converter
+# MinerU to PPTX Converter
 
 This tool converts PDF files and images into editable PowerPoint presentations (`.pptx`) by leveraging structured data from the [MinerU PDF Extractor](https://mineru.net/OpenSourceTools/Extractor). It accurately reconstructs text, images, and layout, providing a high-fidelity, editable version of the original document.
+
+> **🙏 Acknowledgment**: This project is inspired by and extends the original [MinerU2PPT by JuniverseCoder](https://github.com/JuniverseCoder/MinerU2PPT). We've added significant enhancements including AI-powered text correction, multi-language support, advanced rendering features, and comprehensive developer tools.
 
 The application features a user-friendly graphical interface (GUI) and is designed for easy use.
 
@@ -70,7 +72,7 @@ This section provides instructions for running the application from source and p
     ```
 -   **To use the CLI**:
     ```bash
-    python main.py --json <path_to_json> --pdf <path_to_pdf> --output <path_to_ppt> [OPTIONS]
+    python main.py --json <path_to_json> --pdf <path_to_pdf> --output <path_to_pptx> [OPTIONS]
     ```
 
 ### Packaging as a Standalone Executable (.exe)

@@ -29,7 +29,7 @@ MANIFEST
 #  Usually these files are written by a PyInstaller script; this is just a
 #  reminder to not put them in your source tree.
 *.manifest
-*.spec
+# Keep MinerU2PPTX.spec in version control
 
 # Installer logs
 pip-log.txt
@@ -68,3 +68,40 @@ venv.bak/
 *~
 
 tmp/
+ai_config.json
+ai_text_cache.json
+
+# Temporary test files and development artifacts
+test_*.py
+check_*.py
+validate_*.py
+diagnose_*.py
+cleanup_*.py
+temp_*.py
+*_temp.py
+*_test.py
+
+# Temporary image files
+temp_avatar.png
+*.tmp
+
+# Build artifacts that should be ignored
+warn-*.txt
+xref-*.html
+
+# Temporary documentation (keep permanent docs)
+TEST_*.md
+TEMP_*.md
+DRAFT_*.md
+version_info.txt
+ABOUT_SUPPORT_FEATURE.md
+EXECUTABLE_BUILD_SUMMARY.md
+EXECUTABLE_UPDATE_SUMMARY.md
+LANGUAGE_SELECTION_FEATURE.md
+MinerU2PPTX.spec
+BMC/white-button.png
+TRANSLATION_SYSTEM.md
+requirements_installed.txt
+CREDITS_AND_DIFFERENCES.md
+CACHE_MANAGEMENT_FEATURE.md
+PPT_TO_PPTX_UPDATES.md

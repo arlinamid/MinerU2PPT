@@ -1,6 +1,8 @@
-# MinerU 转 PPT 转换器
+# MinerU 转 PPTX 转换器
 
 本工具利用 [MinerU PDF 提取器](https://mineru.net/OpenSourceTools/Extractor) 生成的结构化数据，将 PDF 文件和图片文件转换为可编辑的 PowerPoint 演示文稿（`.pptx`）。它能准确地重建文本、图片和布局，提供一个高保真的、可编辑的原始文档副本。
+
+> **🙏 致谢**: 本项目受到 [JuniverseCoder 的 MinerU2PPT](https://github.com/JuniverseCoder/MinerU2PPT) 启发并在此基础上进行扩展。我们添加了重要的增强功能，包括AI驱动的文本校正、多语言支持、高级渲染功能和全面的开发工具。
 
 本应用带有一个为用户设计的图形界面（GUI），简单易用。
 
@@ -68,7 +70,7 @@
     ```
 -   **使用命令行界面 (CLI)**:
     ```bash
-    python main.py --json <json文件路径> --pdf <pdf文件路径> --output <ppt输出路径> [OPTIONS]
+    python main.py --json <json文件路径> --pdf <pdf文件路径> --output <pptx输出路径> [OPTIONS]
     ```
 
 ### 打包为独立可执行文件 (.exe)

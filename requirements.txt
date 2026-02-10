@@ -1,8 +1,17 @@
-python-pptx
-PyMuPDF
-opencv-python
-numpy
-Pillow
-tkinterdnd2
-pyinstaller
-scikit-image
+# Core dependencies for MinerU2PPT
+python-pptx>=0.6.23
+PyMuPDF>=1.24.0
+opencv-python>=4.9.0
+numpy>=1.26.0
+Pillow>=10.2.0
+tkinterdnd2>=0.3.0  # For tkinter GUI
+pyinstaller>=6.3.0
+streamlit>=1.32.0  # For web-based GUI
+scikit-image>=0.22.0
+
+# AI Services for Text Correction - Latest versions
+openai>=1.8.0
+google-genai>=0.3.0  # New Google GenAI package (replaces deprecated google-generativeai)
+anthropic>=0.8.0
+groq>=0.4.2
+httpx>=0.26.0  # Required for compatibility fixes

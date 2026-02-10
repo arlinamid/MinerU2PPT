@@ -1,0 +1,1288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MinerU2PPTX - Complete User Guide</title>
+    <style>
+        :root {
+            --primary-color: #667eea;
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-color: #f093fb;
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --accent-color: #4ecdc4;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --error-color: #ef4444;
+            --text-dark: #1f2937;
+            --text-light: #6b7280;
+            --bg-light: #f9fafb;
+            --bg-white: #ffffff;
+            --shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --border-radius: 16px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            background: var(--bg-white);
+            padding: 3rem 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-lg);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--primary-gradient);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            color: var(--text-light);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .language-switcher {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin: 2rem 0;
+        }
+
+        .lang-btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            background: var(--bg-white);
+            color: var(--text-dark);
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+            box-shadow: var(--shadow);
+        }
+
+        .lang-btn.active {
+            background: var(--primary-gradient);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .lang-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .content {
+            background: var(--bg-white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+        }
+
+        .nav-tabs {
+            display: flex;
+            background: var(--bg-light);
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .nav-tab {
+            flex: 1;
+            padding: 1.5rem 2rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--text-light);
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .nav-tab.active {
+            color: var(--primary-color);
+            background: var(--bg-white);
+        }
+
+        .nav-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--primary-gradient);
+        }
+
+        .tab-content {
+            display: none;
+            padding: 3rem;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .section {
+            margin-bottom: 3rem;
+        }
+
+        .section h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .section h3 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin: 2rem 0 1rem 0;
+        }
+
+        .icon {
+            width: 2rem;
+            height: 2rem;
+            background: var(--primary-gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .step-card {
+            background: var(--bg-light);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            margin: 1.5rem 0;
+            border-left: 4px solid var(--primary-color);
+            transition: var(--transition);
+        }
+
+        .step-card:hover {
+            transform: translateX(5px);
+            box-shadow: var(--shadow);
+        }
+
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 2.5rem;
+            height: 2.5rem;
+            background: var(--primary-gradient);
+            color: white;
+            border-radius: 50%;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+
+        .alert {
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            margin: 1.5rem 0;
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .alert-info {
+            background: #dbeafe;
+            border-left: 4px solid #3b82f6;
+            color: #1e40af;
+        }
+
+        .alert-warning {
+            background: #fef3c7;
+            border-left: 4px solid var(--warning-color);
+            color: #92400e;
+        }
+
+        .alert-success {
+            background: #d1fae5;
+            border-left: 4px solid var(--success-color);
+            color: #065f46;
+        }
+
+        .code-block {
+            background: #1f2937;
+            color: #f9fafb;
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            margin: 1rem 0;
+            font-family: 'Consolas', monospace;
+            overflow-x: auto;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .feature-card {
+            background: var(--bg-white);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            border: 1px solid #e5e7eb;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .feature-icon {
+            width: 3rem;
+            height: 3rem;
+            background: var(--secondary-gradient);
+            border-radius: var(--border-radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .btn-primary {
+            background: var(--primary-gradient);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: var(--secondary-gradient);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .about-me {
+            background: var(--primary-gradient);
+            color: white;
+            text-align: center;
+            padding: 3rem 2rem;
+        }
+
+        .about-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            margin: 0 auto 2rem;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .social-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 3rem;
+            height: 3rem;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            color: white;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .social-link:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .nav-tabs {
+                flex-wrap: wrap;
+            }
+
+            .nav-tab {
+                flex: none;
+                min-width: 120px;
+                padding: 1rem;
+            }
+
+            .tab-content {
+                padding: 2rem 1.5rem;
+            }
+
+            .language-switcher {
+                flex-wrap: wrap;
+            }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 MinerU2PPTX</h1>
+            <p>Complete User Guide - Transform PDFs & Images to Professional PowerPoint Presentations with AI Enhancement</p>
+            
+            <div class="language-switcher">
+                <button class="lang-btn active" onclick="switchLanguage('en')">🇺🇸 English</button>
+                <button class="lang-btn" onclick="switchLanguage('hu')">🇭🇺 Magyar</button>
+                <button class="lang-btn" onclick="switchLanguage('zh')">🇨🇳 中文</button>
+            </div>
+        </div>
+
+        <div class="content">
+            <!-- Navigation Tabs -->
+            <div class="nav-tabs">
+                <button class="nav-tab active" onclick="showTab('getting-started')">Getting Started</button>
+                <button class="nav-tab" onclick="showTab('setup')">AI Setup</button>
+                <button class="nav-tab" onclick="showTab('usage')">How to Use</button>
+                <button class="nav-tab" onclick="showTab('features')">Features</button>
+                <button class="nav-tab" onclick="showTab('troubleshooting')">Help</button>
+            </div>
+
+            <!-- English Content -->
+            <div id="content-en">
+                <!-- Getting Started Tab -->
+                <div class="tab-content active" id="getting-started-en">
+                    <div class="section">
+                        <h2><span class="icon">1</span>Getting Started</h2>
+                        
+                        <div class="alert alert-info">
+                            <div>
+                                <strong>🎯 Quick Start:</strong> Download the executable, get your MinerU JSON, configure AI (optional), and convert!
+                            </div>
+                        </div>
+
+                        <h3>What You Need</h3>
+                        
+                        <div class="step-card">
+                            <div class="step-number">1</div>
+                            <h4>Download MinerU2PPTX</h4>
+                            <p>Get the latest <code>MinerU2PPTX.exe</code> from the releases page. No installation required!</p>
+                        </div>
+
+                        <div class="step-card">
+                            <div class="step-number">2</div>
+                            <h4>Prepare Your Files</h4>
+                            <p>You need two files:</p>
+                            <ul>
+                                <li><strong>Original File:</strong> PDF or image file you want to convert</li>
+                                <li><strong>MinerU JSON:</strong> Extracted data from MinerU service</li>
+                            </ul>
+                        </div>
+
+                        <div class="step-card">
+                            <div class="step-number">3</div>
+                            <h4>Get MinerU JSON File</h4>
+                            <p>Visit <a href="https://mineru.net/OpenSourceTools/Extractor" target="_blank">MinerU PDF Extractor</a>:</p>
+                            <ol>
+                                <li>Upload your PDF or image file</li>
+                                <li>Wait for processing to complete</li>
+                                <li>Download the generated JSON file</li>
+                                <li>Keep both files in an accessible location</li>
+                            </ol>
+                            
+                            <div class="alert alert-warning">
+                                <div>
+                                    <strong>⚠️ Important:</strong> The JSON file contains the structural data needed for accurate conversion. Without it, the conversion cannot proceed.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="step-card">
+                            <div class="step-number">4</div>
+                            <h4>AI Setup (Optional but Recommended)</h4>
+                            <p>For the best results, configure AI text correction. This dramatically improves text quality, especially for:</p>
+                            <ul>
+                                <li>Scanned documents with OCR errors</li>
+                                <li>Non-English text</li>
+                                <li>Complex formatting</li>
+                                <li>Technical documents</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI Setup Tab -->
+                <div class="tab-content" id="setup-en">
+                    <div class="section">
+                        <h2><span class="icon">🤖</span>AI Configuration</h2>
+                        
+                        <div class="alert alert-success">
+                            <div>
+                                <strong>✨ Pro Tip:</strong> AI text correction can improve accuracy by 60-90% for OCR documents!
+                            </div>
+                        </div>
+
+                        <h3>Supported AI Providers</h3>
+                        
+                        <div class="feature-grid">
+                            <div class="feature-card">
+                                <div class="feature-icon">🚀</div>
+                                <h4>OpenAI GPT</h4>
+                                <p>GPT-3.5-turbo and GPT-4 models. Best for general text correction and complex documents.</p>
+                                <a href="https://platform.openai.com/api-keys" target="_blank" class="btn btn-primary">Get API Key</a>
+                            </div>
+
+                            <div class="feature-card">
+                                <div class="feature-icon">🧠</div>
+                                <h4>Google Gemini</h4>
+                                <p>Gemini Pro and Flash models. Excellent for multilingual content and technical documents.</p>
+                                <a href="https://aistudio.google.com/apikey" target="_blank" class="btn btn-primary">Get API Key</a>
+                            </div>
+
+                            <div class="feature-card">
+                                <div class="feature-icon">⚡</div>
+                                <h4>Anthropic Claude</h4>
+                                <p>Claude-3 models (Sonnet, Haiku, Opus). Superior for academic and professional documents.</p>
+                                <a href="https://console.anthropic.com/account/keys" target="_blank" class="btn btn-primary">Get API Key</a>
+                            </div>
+
+                            <div class="feature-card">
+                                <div class="feature-icon">⚡</div>
+                                <h4>Groq</h4>
+                                <p>Ultra-fast inference with Llama and Mixtral models. Great for quick processing.</p>
+                                <a href="https://console.groq.com/keys" target="_blank" class="btn btn-primary">Get API Key</a>
+                            </div>
+                        </div>
+
+                        <h3>How to Configure AI</h3>
+                        
+                        <div class="step-card">
+                            <div class="step-number">1</div>
+                            <h4>Open AI Configuration</h4>
+                            <p>In MinerU2PPTX, click the <strong>"AI Config"</strong> button to open the configuration dialog.</p>
+                        </div>
+
+                        <div class="step-card">
+                            <div class="step-number">2</div>
+                            <h4>Select Provider</h4>
+                            <p>Choose your preferred AI provider from the dropdown menu.</p>
+                        </div>
+
+                        <div class="step-card">
+                            <div class="step-number">3</div>
+                            <h4>Enter API Key</h4>
+                            <p>Paste your API key in the designated field. Keys are stored locally and encrypted.</p>
+                            
+                            <div class="alert alert-info">
+                                <div>
+                                    <strong>🔐 Security:</strong> API keys are stored in <code>ai_config.json</code> in your application directory. Never share this file publicly.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="step-card">
+                            <div class="step-number">4</div>
+                            <h4>Test Configuration</h4>
+                            <p>Click <strong>"Test Connection"</strong> to verify your setup. The app will fetch available models automatically.</p>
+                        </div>
+
+                        <div class="step-card">
+                            <div class="step-number">5</div>
+                            <h4>Select Model</h4>
+                            <p>Choose the specific model you want to use. Different models have different capabilities and costs.</p>
+                        </div>
+
+                        <h3>API Key Storage</h3>
+                        <p>Your API keys are stored in <code>ai_config.json</code> in the application directory:</p>
+                        
+                        <div class="code-block">
+{
+  "providers": {
+    "openai": {
+      "api_key": "your-key-here",
+      "model": "gpt-3.5-turbo"
+    }
+  },
+  "correction_enabled": true,
+  "batch_size": 10
+}</div>
+
+                        <div class="alert alert-warning">
+                            <div>
+                                <strong>⚠️ Important:</strong>
+                                <ul>
+                                    <li>Keep your API keys private</li>
+                                    <li>Monitor usage to avoid unexpected charges</li>
+                                    <li>Some providers offer free tiers</li>
+                                    <li>You can use the app without AI (basic mode)</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Usage Tab -->
+                <div class="tab-content" id="usage-en">
+                    <div class="section">
+                        <h2><span class="icon">📖</span>How to Use</h2>
+                        
+                        <h3>Single File Conversion</h3>
+                        
+                        <div class="step-card">
+                            <div class="step-number">1</div>
+                            <h4>Launch Application</h4>
+                            <p>Double-click <code>MinerU2PPTX.exe</code> to start the application.</p>
+                        </div>
+
+                        <div class="step-card">
+                            <div class="step-number">2</div>
+                            <h4>Select Input File</h4>
+                            <p>Click <strong>"Browse..."</strong> or drag and drop your PDF/image file into the first field.</p>
+                        </div>
+
+                        <div class="step-card">
+                            <div class="step-number">3</div>
+                            <h4>Select JSON File</h4>
+                            <p>Click <strong>"Browse..."</strong> or drag and drop your MinerU JSON file into the second field.</p>
+                        </div>
+
+                        <div class="step-card">
+                            <div class="step-number">4</div>
+                            <h4>Choose Output Location</h4>
+                            <p>The output path is auto-generated, but you can change it using <strong>"Save As..."</strong>.</p>
+                        </div>
+
+                        <div class="step-card">
+                            <div class="step-number">5</div>
+                            <h4>Configure Options</h4>
+                            <ul>
+                                <li><strong>Remove Watermark:</strong> Automatically remove footers/headers</li>
+                                <li><strong>AI Text Correction:</strong> Enable if configured</li>
+                                <li><strong>Page Selection:</strong> Convert all pages or specify ranges</li>
+                                <li><strong>Generate Debug Images:</strong> For troubleshooting only</li>
+                            </ul>
+                        </div>
+
+                        <div class="step-card">
+                            <div class="step-number">6</div>
+                            <h4>Start Conversion</h4>
+                            <p>Click <strong>"Start Conversion"</strong> and wait for completion.</p>
+                        </div>
+
+                        <h3>Batch Processing</h3>
+                        
+                        <div class="step-card">
+                            <div class="step-number">1</div>
+                            <h4>Switch to Batch Mode</h4>
+                            <p>Click the <strong>"Batch Mode"</strong> button in the top-right corner.</p>
+                        </div>
+
+                        <div class="step-card">
+                            <div class="step-number">2</div>
+                            <h4>Add Tasks</h4>
+                            <p>Click <strong>"Add Task"</strong> to open the task configuration dialog.</p>
+                        </div>
+
+                        <div class="step-card">
+                            <div class="step-number">3</div>
+                            <h4>Configure Each Task</h4>
+                            <p>For each task, specify the input file, JSON file, output location, and options.</p>
+                        </div>
+
+                        <div class="step-card">
+                            <div class="step-number">4</div>
+                            <h4>Start Batch Conversion</h4>
+                            <p>Click <strong>"Start Batch Conversion"</strong> to process all tasks sequentially.</p>
+                        </div>
+
+                        <div class="alert alert-success">
+                            <div>
+                                <strong>🎉 Success:</strong> After completion, a support dialog will appear. If this tool helped you, consider supporting the developer!
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Features Tab -->
+                <div class="tab-content" id="features-en">
+                    <div class="section">
+                        <h2><span class="icon">⭐</span>Key Features</h2>
+                        
+                        <div class="feature-grid">
+                            <div class="feature-card">
+                                <div class="feature-icon">🤖</div>
+                                <h4>AI Text Correction</h4>
+                                <p>Advanced text correction using OpenAI, Gemini, Claude, or Groq models for superior accuracy.</p>
+                            </div>
+
+                            <div class="feature-card">
+                                <div class="feature-icon">🌍</div>
+                                <h4>Multi-Language Support</h4>
+                                <p>Interface available in English, Hungarian, and Chinese with dynamic language switching.</p>
+                            </div>
+
+                            <div class="feature-card">
+                                <div class="feature-icon">📄</div>
+                                <h4>Smart Page Selection</h4>
+                                <p>Convert single pages or specify page ranges (e.g., 1-5, 10-15) for targeted conversion.</p>
+                            </div>
+
+                            <div class="feature-card">
+                                <div class="feature-icon">🎨</div>
+                                <h4>Advanced Text Rendering</h4>
+                                <p>Intelligent text box sizing with collision detection and enhanced character alignment.</p>
+                            </div>
+
+                            <div class="feature-card">
+                                <div class="feature-icon">🔄</div>
+                                <h4>Batch Processing</h4>
+                                <p>Convert multiple documents in sequence with individual configuration for each task.</p>
+                            </div>
+
+                            <div class="feature-card">
+                                <div class="feature-icon">💾</div>
+                                <h4>Smart Caching</h4>
+                                <p>Intelligent caching system prevents re-processing identical text, saving time and API costs.</p>
+                            </div>
+
+                            <div class="feature-card">
+                                <div class="feature-icon">🛠️</div>
+                                <h4>Debug Mode</h4>
+                                <p>Generate diagnostic images to troubleshoot conversion issues and optimize results.</p>
+                            </div>
+
+                            <div class="feature-card">
+                                <div class="feature-icon">🔒</div>
+                                <h4>Secure Configuration</h4>
+                                <p>API keys stored locally with encryption. No data sent to third parties except AI providers.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Troubleshooting Tab -->
+                <div class="tab-content" id="troubleshooting-en">
+                    <div class="section">
+                        <h2><span class="icon">❓</span>Troubleshooting</h2>
+                        
+                        <h3>Common Issues</h3>
+                        
+                        <div class="step-card">
+                            <h4>❌ "Cannot find JSON file"</h4>
+                            <p><strong>Solution:</strong> Ensure you've downloaded the JSON file from MinerU and selected the correct file path.</p>
+                        </div>
+
+                        <div class="step-card">
+                            <h4>❌ "AI service unavailable"</h4>
+                            <p><strong>Solutions:</strong></p>
+                            <ul>
+                                <li>Check your internet connection</li>
+                                <li>Verify API key is correct</li>
+                                <li>Ensure API key has sufficient credits</li>
+                                <li>Try a different AI provider</li>
+                            </ul>
+                        </div>
+
+                        <div class="step-card">
+                            <h4>❌ "Text rendering issues"</h4>
+                            <p><strong>Solutions:</strong></p>
+                            <ul>
+                                <li>Enable AI text correction for better results</li>
+                                <li>Try different page ranges if specific pages fail</li>
+                                <li>Enable debug mode to diagnose issues</li>
+                                <li>Check if the source document has clear text</li>
+                            </ul>
+                        </div>
+
+                        <div class="step-card">
+                            <h4>❌ "Conversion fails"</h4>
+                            <p><strong>Solutions:</strong></p>
+                            <ul>
+                                <li>Ensure both input and JSON files are valid</li>
+                                <li>Check file permissions for output location</li>
+                                <li>Try disabling AI correction for basic conversion</li>
+                                <li>Restart the application</li>
+                            </ul>
+                        </div>
+
+                        <h3>Performance Tips</h3>
+                        
+                        <div class="alert alert-info">
+                            <div>
+                                <strong>💡 Optimization Tips:</strong>
+                                <ul>
+                                    <li>Use Groq for fastest AI processing</li>
+                                    <li>Process smaller page ranges for large documents</li>
+                                    <li>Enable caching to avoid re-processing</li>
+                                    <li>Close other applications to free up memory</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <h3>Getting Help</h3>
+                        
+                        <div class="feature-grid">
+                            <div class="feature-card">
+                                <div class="feature-icon">📚</div>
+                                <h4>Documentation</h4>
+                                <p>Check the included README files and documentation for detailed information.</p>
+                            </div>
+
+                            <div class="feature-card">
+                                <div class="feature-icon">🐛</div>
+                                <h4>Report Issues</h4>
+                                <p>Found a bug? Report it on GitHub with detailed steps to reproduce.</p>
+                                <a href="https://github.com/arlinamid" target="_blank" class="btn btn-secondary">GitHub</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hungarian Content -->
+            <div id="content-hu" class="hidden">
+                <!-- Getting Started Tab -->
+                <div class="tab-content active" id="getting-started-hu">
+                    <div class="section">
+                        <h2><span class="icon">1</span>Első lépések</h2>
+                        
+                        <div class="alert alert-info">
+                            <div>
+                                <strong>🎯 Gyors kezdés:</strong> Töltse le az alkalmazást, szerezze be a MinerU JSON-t, állítsa be az AI-t (opcionális), és konvertáljon!
+                            </div>
+                        </div>
+
+                        <h3>Amire szüksége van</h3>
+                        
+                        <div class="step-card">
+                            <div class="step-number">1</div>
+                            <h4>MinerU2PPTX letöltése</h4>
+                            <p>Szerezze be a legújabb <code>MinerU2PPTX.exe</code> fájlt a kiadások oldaláról. Telepítés nem szükséges!</p>
+                        </div>
+
+                        <div class="step-card">
+                            <div class="step-number">2</div>
+                            <h4>Fájlok előkészítése</h4>
+                            <p>Két fájlra van szüksége:</p>
+                            <ul>
+                                <li><strong>Eredeti fájl:</strong> A konvertálni kívánt PDF vagy kép</li>
+                                <li><strong>MinerU JSON:</strong> A MinerU szolgáltatásból kinyert adatok</li>
+                            </ul>
+                        </div>
+
+                        <div class="step-card">
+                            <div class="step-number">3</div>
+                            <h4>MinerU JSON fájl beszerzése</h4>
+                            <p>Látogasson el a <a href="https://mineru.net/OpenSourceTools/Extractor" target="_blank">MinerU PDF Extractor</a> oldalára:</p>
+                            <ol>
+                                <li>Töltse fel PDF vagy kép fájlját</li>
+                                <li>Várja meg a feldolgozás befejezését</li>
+                                <li>Töltse le a generált JSON fájlt</li>
+                                <li>Tartsa mindkét fájlt elérhető helyen</li>
+                            </ol>
+                        </div>
+
+                        <div class="step-card">
+                            <div class="step-number">4</div>
+                            <h4>AI beállítás (Opcionális, de ajánlott)</h4>
+                            <p>A legjobb eredményekért állítsa be az AI szövegjavítást. Ez jelentősen javítja a szöveg minőségét.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI Setup Tab -->
+                <div class="tab-content" id="setup-hu">
+                    <div class="section">
+                        <h2><span class="icon">🤖</span>AI Konfiguráció</h2>
+                        
+                        <h3>Támogatott AI szolgáltatók</h3>
+                        
+                        <div class="feature-grid">
+                            <div class="feature-card">
+                                <div class="feature-icon">🚀</div>
+                                <h4>OpenAI GPT</h4>
+                                <p>GPT-3.5-turbo és GPT-4 modellek. Legjobb általános szövegjavításhoz.</p>
+                                <a href="https://platform.openai.com/api-keys" target="_blank" class="btn btn-primary">API kulcs beszerzése</a>
+                            </div>
+
+                            <div class="feature-card">
+                                <div class="feature-icon">🧠</div>
+                                <h4>Google Gemini</h4>
+                                <p>Gemini Pro és Flash modellek. Kiváló többnyelvű tartalomhoz.</p>
+                                <a href="https://aistudio.google.com/apikey" target="_blank" class="btn btn-primary">API kulcs beszerzése</a>
+                            </div>
+
+                            <div class="feature-card">
+                                <div class="feature-icon">⚡</div>
+                                <h4>Anthropic Claude</h4>
+                                <p>Claude-3 modellek. Kiváló tudományos dokumentumokhoz.</p>
+                                <a href="https://console.anthropic.com/account/keys" target="_blank" class="btn btn-primary">API kulcs beszerzése</a>
+                            </div>
+
+                            <div class="feature-card">
+                                <div class="feature-icon">⚡</div>
+                                <h4>Groq</h4>
+                                <p>Ultragyors feldolgozás Llama és Mixtral modellekkel.</p>
+                                <a href="https://console.groq.com/keys" target="_blank" class="btn btn-primary">API kulcs beszerzése</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Usage Tab -->
+                <div class="tab-content" id="usage-hu">
+                    <div class="section">
+                        <h2><span class="icon">📖</span>Használat</h2>
+                        
+                        <h3>Egyetlen fájl konvertálása</h3>
+                        
+                        <div class="step-card">
+                            <div class="step-number">1</div>
+                            <h4>Alkalmazás indítása</h4>
+                            <p>Kattintson duplán a <code>MinerU2PPTX.exe</code> fájlra az alkalmazás indításához.</p>
+                        </div>
+
+                        <div class="step-card">
+                            <div class="step-number">2</div>
+                            <h4>Bemeneti fájl kiválasztása</h4>
+                            <p>Kattintson a <strong>"Tallózás..."</strong> gombra vagy húzza az első mezőbe a PDF/kép fájlt.</p>
+                        </div>
+
+                        <div class="step-card">
+                            <div class="step-number">3</div>
+                            <h4>JSON fájl kiválasztása</h4>
+                            <p>Kattintson a <strong>"Tallózás..."</strong> gombra vagy húzza a második mezőbe a MinerU JSON fájlt.</p>
+                        </div>
+
+                        <div class="step-card">
+                            <div class="step-number">4</div>
+                            <h4>Konvertálás indítása</h4>
+                            <p>Kattintson a <strong>"Konvertálás indítása"</strong> gombra és várja meg a befejezést.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Features Tab -->
+                <div class="tab-content" id="features-hu">
+                    <div class="section">
+                        <h2><span class="icon">⭐</span>Főbb funkciók</h2>
+                        
+                        <div class="feature-grid">
+                            <div class="feature-card">
+                                <div class="feature-icon">🤖</div>
+                                <h4>AI Szövegjavítás</h4>
+                                <p>Fejlett szövegjavítás OpenAI, Gemini, Claude vagy Groq modellekkel.</p>
+                            </div>
+
+                            <div class="feature-card">
+                                <div class="feature-icon">🌍</div>
+                                <h4>Többnyelvű támogatás</h4>
+                                <p>Felület elérhető magyar, angol és kínai nyelven dinamikus váltással.</p>
+                            </div>
+
+                            <div class="feature-card">
+                                <div class="feature-icon">📄</div>
+                                <h4>Intelligens oldalválasztás</h4>
+                                <p>Konvertáljon egyetlen oldalakat vagy adjon meg tartományokat.</p>
+                            </div>
+
+                            <div class="feature-card">
+                                <div class="feature-icon">🔄</div>
+                                <h4>Kötegelt feldolgozás</h4>
+                                <p>Több dokumentum egymás utáni konvertálása egyedi beállításokkal.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Troubleshooting Tab -->
+                <div class="tab-content" id="troubleshooting-hu">
+                    <div class="section">
+                        <h2><span class="icon">❓</span>Hibaelhárítás</h2>
+                        
+                        <h3>Gyakori problémák</h3>
+                        
+                        <div class="step-card">
+                            <h4>❌ "JSON fájl nem található"</h4>
+                            <p><strong>Megoldás:</strong> Győződjön meg arról, hogy letöltötte a JSON fájlt a MinerU-ból és a helyes fájl útvonalat választotta.</p>
+                        </div>
+
+                        <div class="step-card">
+                            <h4>❌ "AI szolgáltatás nem elérhető"</h4>
+                            <p><strong>Megoldások:</strong></p>
+                            <ul>
+                                <li>Ellenőrizze internetkapcsolatát</li>
+                                <li>Győződjön meg az API kulcs helyességéről</li>
+                                <li>Próbáljon másik AI szolgáltatót</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chinese Content -->
+            <div id="content-zh" class="hidden">
+                <!-- Getting Started Tab -->
+                <div class="tab-content active" id="getting-started-zh">
+                    <div class="section">
+                        <h2><span class="icon">1</span>入门指南</h2>
+                        
+                        <div class="alert alert-info">
+                            <div>
+                                <strong>🎯 快速开始：</strong> 下载应用程序，获取MinerU JSON，配置AI（可选），然后转换！
+                            </div>
+                        </div>
+
+                        <h3>您需要准备的</h3>
+                        
+                        <div class="step-card">
+                            <div class="step-number">1</div>
+                            <h4>下载 MinerU2PPTX</h4>
+                            <p>从发布页面获取最新的 <code>MinerU2PPTX.exe</code> 文件。无需安装！</p>
+                        </div>
+
+                        <div class="step-card">
+                            <div class="step-number">2</div>
+                            <h4>准备文件</h4>
+                            <p>您需要两个文件：</p>
+                            <ul>
+                                <li><strong>原始文件：</strong> 要转换的PDF或图像文件</li>
+                                <li><strong>MinerU JSON：</strong> 从MinerU服务提取的数据</li>
+                            </ul>
+                        </div>
+
+                        <div class="step-card">
+                            <div class="step-number">3</div>
+                            <h4>获取 MinerU JSON 文件</h4>
+                            <p>访问 <a href="https://mineru.net/OpenSourceTools/Extractor" target="_blank">MinerU PDF Extractor</a>：</p>
+                            <ol>
+                                <li>上传您的PDF或图像文件</li>
+                                <li>等待处理完成</li>
+                                <li>下载生成的JSON文件</li>
+                                <li>将两个文件保存在可访问的位置</li>
+                            </ol>
+                        </div>
+
+                        <div class="step-card">
+                            <div class="step-number">4</div>
+                            <h4>AI设置（可选但推荐）</h4>
+                            <p>为了获得最佳结果，请配置AI文本校正。这将显著提高文本质量。</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI Setup Tab -->
+                <div class="tab-content" id="setup-zh">
+                    <div class="section">
+                        <h2><span class="icon">🤖</span>AI 配置</h2>
+                        
+                        <h3>支持的AI提供商</h3>
+                        
+                        <div class="feature-grid">
+                            <div class="feature-card">
+                                <div class="feature-icon">🚀</div>
+                                <h4>OpenAI GPT</h4>
+                                <p>GPT-3.5-turbo 和 GPT-4 模型。适合通用文本校正。</p>
+                                <a href="https://platform.openai.com/api-keys" target="_blank" class="btn btn-primary">获取API密钥</a>
+                            </div>
+
+                            <div class="feature-card">
+                                <div class="feature-icon">🧠</div>
+                                <h4>Google Gemini</h4>
+                                <p>Gemini Pro 和 Flash 模型。优秀的多语言内容处理。</p>
+                                <a href="https://aistudio.google.com/apikey" target="_blank" class="btn btn-primary">获取API密钥</a>
+                            </div>
+
+                            <div class="feature-card">
+                                <div class="feature-icon">⚡</div>
+                                <h4>Anthropic Claude</h4>
+                                <p>Claude-3 模型。优秀的学术文档处理。</p>
+                                <a href="https://console.anthropic.com/account/keys" target="_blank" class="btn btn-primary">获取API密钥</a>
+                            </div>
+
+                            <div class="feature-card">
+                                <div class="feature-icon">⚡</div>
+                                <h4>Groq</h4>
+                                <p>使用Llama和Mixtral模型的超快推理。</p>
+                                <a href="https://console.groq.com/keys" target="_blank" class="btn btn-primary">获取API密钥</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Usage Tab -->
+                <div class="tab-content" id="usage-zh">
+                    <div class="section">
+                        <h2><span class="icon">📖</span>如何使用</h2>
+                        
+                        <h3>单文件转换</h3>
+                        
+                        <div class="step-card">
+                            <div class="step-number">1</div>
+                            <h4>启动应用程序</h4>
+                            <p>双击 <code>MinerU2PPTX.exe</code> 启动应用程序。</p>
+                        </div>
+
+                        <div class="step-card">
+                            <div class="step-number">2</div>
+                            <h4>选择输入文件</h4>
+                            <p>点击<strong>"浏览..."</strong>或将PDF/图像文件拖放到第一个字段。</p>
+                        </div>
+
+                        <div class="step-card">
+                            <div class="step-number">3</div>
+                            <h4>选择JSON文件</h4>
+                            <p>点击<strong>"浏览..."</strong>或将MinerU JSON文件拖放到第二个字段。</p>
+                        </div>
+
+                        <div class="step-card">
+                            <div class="step-number">4</div>
+                            <h4>开始转换</h4>
+                            <p>点击<strong>"开始转换"</strong>并等待完成。</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Features Tab -->
+                <div class="tab-content" id="features-zh">
+                    <div class="section">
+                        <h2><span class="icon">⭐</span>主要功能</h2>
+                        
+                        <div class="feature-grid">
+                            <div class="feature-card">
+                                <div class="feature-icon">🤖</div>
+                                <h4>AI文本校正</h4>
+                                <p>使用OpenAI、Gemini、Claude或Groq模型进行高级文本校正。</p>
+                            </div>
+
+                            <div class="feature-card">
+                                <div class="feature-icon">🌍</div>
+                                <h4>多语言支持</h4>
+                                <p>界面支持中文、英文和匈牙利语，支持动态语言切换。</p>
+                            </div>
+
+                            <div class="feature-card">
+                                <div class="feature-icon">📄</div>
+                                <h4>智能页面选择</h4>
+                                <p>转换单个页面或指定页面范围。</p>
+                            </div>
+
+                            <div class="feature-card">
+                                <div class="feature-icon">🔄</div>
+                                <h4>批处理</h4>
+                                <p>使用独立配置批量转换多个文档。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Troubleshooting Tab -->
+                <div class="tab-content" id="troubleshooting-zh">
+                    <div class="section">
+                        <h2><span class="icon">❓</span>故障排除</h2>
+                        
+                        <h3>常见问题</h3>
+                        
+                        <div class="step-card">
+                            <h4>❌ "找不到JSON文件"</h4>
+                            <p><strong>解决方案：</strong> 确保您已从MinerU下载了JSON文件并选择了正确的文件路径。</p>
+                        </div>
+
+                        <div class="step-card">
+                            <h4>❌ "AI服务不可用"</h4>
+                            <p><strong>解决方案：</strong></p>
+                            <ul>
+                                <li>检查互联网连接</li>
+                                <li>验证API密钥正确性</li>
+                                <li>尝试其他AI提供商</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- About Me Section -->
+        <div class="about-me">
+            <div class="about-avatar">👨‍💻</div>
+            <h2>About the Developer</h2>
+            <p>Hi! I'm <strong>arlinamid</strong>, the developer behind MinerU2PPTX. This project extends the original MinerU2PPT concept with advanced AI capabilities, multi-language support, and professional features.</p>
+            
+            <div class="social-links">
+                <a href="https://github.com/arlinamid" target="_blank" class="social-link" title="GitHub">
+                    <span>🔗</span>
+                </a>
+                <a href="https://buymeacoffee.com/arlinamid" target="_blank" class="social-link" title="Buy Me a Coffee">
+                    <span>☕</span>
+                </a>
+            </div>
+            
+            <p style="margin-top: 2rem; opacity: 0.9;">
+                <strong>Inspired by:</strong> <a href="https://github.com/JuniverseCoder/MinerU2PPT" target="_blank" style="color: rgba(255, 255, 255, 0.8);">JuniverseCoder's MinerU2PPT</a>
+            </p>
+        </div>
+
+        <div class="footer">
+            <p>&copy; 2026 arlinamid | MinerU2PPTX Enhanced Version | Inspired by JuniverseCoder's original work</p>
+        </div>
+    </div>
+
+    <script>
+        let currentLanguage = 'en';
+        let currentTab = 'getting-started';
+
+        function switchLanguage(lang) {
+            currentLanguage = lang;
+            
+            // Update language buttons
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Hide all content divs
+            document.querySelectorAll('[id^="content-"]').forEach(div => {
+                div.classList.add('hidden');
+            });
+            
+            // Show selected language content
+            document.getElementById(`content-${lang}`).classList.remove('hidden');
+            
+            // Update active tab for new language
+            showTab(currentTab);
+        }
+
+        function showTab(tabName) {
+            currentTab = tabName;
+            
+            // Update tab buttons
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Hide all tab contents for current language
+            const currentContent = document.getElementById(`content-${currentLanguage}`);
+            currentContent.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Show selected tab content
+            const targetTab = currentContent.querySelector(`#${tabName}-${currentLanguage}`);
+            if (targetTab) {
+                targetTab.classList.add('active');
+            }
+        }
+
+        // Initialize with English and Getting Started tab
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set initial language button active state
+            document.querySelector('.lang-btn').classList.add('active');
+            
+            // Set initial tab active state
+            document.querySelector('.nav-tab').classList.add('active');
+            
+            // Initialize smooth scrolling for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+        });
+
+        // Add click event listeners to nav tabs
+        document.querySelectorAll('.nav-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                const tabName = this.getAttribute('onclick').match(/showTab\('(.+?)'\)/)[1];
+                showTab(tabName);
+            });
+        });
+    </script>
+</body>
+</html>
