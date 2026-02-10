@@ -1,3 +1,9 @@
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Release](https://img.shields.io/github/v/release/arlinamid/MinerU2PPT)](https://github.com/arlinamid/MinerU2PPT/releases)
+[![Downloads](https://img.shields.io/github/downloads/arlinamid/MinerU2PPT/total)](https://github.com/arlinamid/MinerU2PPT/releases)
+[![Stars](https://img.shields.io/github/stars/arlinamid/MinerU2PPT)](https://github.com/arlinamid/MinerU2PPT/stargazers)
+[![Issues](https://img.shields.io/github/issues/arlinamid/MinerU2PPT)](https://github.com/arlinamid/MinerU2PPT/issues)
+
 # MinerU 转 PPTX 转换器
 
 本工具利用 [MinerU PDF 提取器](https://mineru.net/OpenSourceTools/Extractor) 生成的结构化数据，将 PDF 文件和图片文件转换为可编辑的 PowerPoint 演示文稿（`.pptx`）。它能准确地重建文本、图片和布局，提供一个高保真的、可编辑的原始文档副本。
@@ -94,3 +100,38 @@
 
 3.  **找到可执行文件**:
     命令执行完毕后，您将在 `dist` 文件夹中找到独立的应用文件：`MinerU2PPT.exe`。
+
+## 📚 文档
+
+如需完整文档，请访问 **[docs/](docs/)** 文件夹：
+
+- **[📖 完整用户指南](docs/USER_GUIDE.html)** - 支持3种语言的交互式手册
+- **[🏗️ 构建说明](docs/BUILD_INSTRUCTIONS.md)** - 开发环境设置和部署
+- **[🤖 AI集成指南](docs/CLAUDE.md)** - AI服务配置和使用
+- **[🌍 翻译系统](docs/TRANSLATION_SYSTEM.md)** - 多语言支持详情
+- **[📋 所有文档](docs/README.md)** - 完整文档索引
+
+## 📝 更新日志
+
+本项目的所有重要更改都记录在 **[CHANGELOG.md](CHANGELOG.md)** 中：
+
+- **[v2.0.0 (最新版)](CHANGELOG.md#200---2026-02-10)** - AI集成、多语言支持和专业GUI的主要版本
+- **[所有版本](CHANGELOG.md)** - 完整版本历史和功能添加
+- **[计划功能](CHANGELOG.md#unreleased)** - 即将推出的增强功能和路线图
+
+## 📄 许可证
+
+本项目采用 **MIT 许可证** - 详情请见 **[LICENSE](LICENSE)** 文件。
+
+### 致谢
+这个增强版本受到 [JuniverseCoder 的原始 MinerU2PPT](https://github.com/JuniverseCoder/MinerU2PPT) 启发并在此基础上扩展。重要的增强功能（AI集成、多语言支持、专业GUI、全面文档）是在MIT许可证下的原创贡献。
+
+### 第三方
+本软件使用了各种开源库和AI服务。完整的归属和第三方致谢请参见 [LICENSE](LICENSE) 文件。
+
+## 💖 支持
+
+如果这个工具对您有帮助，请考虑：
+- ⭐ **[为仓库加星](https://github.com/arlinamid/MinerU2PPT)**
+- ☕ **[请我喝咖啡](https://buymeacoffee.com/arlinamid)**
+- 🐛 **[报告问题](https://github.com/arlinamid/MinerU2PPT/issues)** 以获得改进
