@@ -96,3 +96,20 @@ You can package the GUI application into a single `.exe` file for easy distribut
 
 3.  **Find the Executable**:
     Your standalone application, `MinerU2PPT.exe`, will be located in the `dist` folder.
+
+## 📚 Documentation
+
+For comprehensive documentation, please visit the **[docs/](docs/)** folder:
+
+- **[📖 Complete User Guide](docs/USER_GUIDE.html)** - Interactive manual with 3-language support
+- **[🏗️ Build Instructions](docs/BUILD_INSTRUCTIONS.md)** - Development setup and deployment
+- **[🤖 AI Integration Guide](docs/CLAUDE.md)** - AI services configuration and usage
+- **[🌍 Translation System](docs/TRANSLATION_SYSTEM.md)** - Multi-language support details
+- **[📋 All Documentation](docs/README.md)** - Complete documentation index
+
+## 💖 Support
+
+If this tool helps you, consider:
+- ⭐ **[Star the repository](https://github.com/arlinamid/MinerU2PPT)**
+- ☕ **[Buy me a coffee](https://buymeacoffee.com/arlinamid)**
+- 🐛 **[Report issues](https://github.com/arlinamid/MinerU2PPT/issues)** for improvements
