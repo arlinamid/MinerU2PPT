@@ -79,7 +79,7 @@
     "about_button": "关于",
     "about_title": "关于 MinerU2PPTX",
     "about_app_name": "MinerU2PPTX 转换器",
-    "about_version": "版本 1.0",
+    "about_version": "版本 2.0.1",
     "about_description": "将PDF和图像转换为PowerPoint演示文稿，具有AI驱动的文本校正功能",
     "about_developer": "开发者:",
     "about_github": "GitHub:",
@@ -87,5 +87,16 @@
     "support_button": "☕ 请我喝咖啡",
     "github_button": "🔗 访问 GitHub",
     "support_message": "转换完成！如果这个工具对您有帮助，请考虑支持开发者:",
-    "support_dialog_title": "支持开发者"
+    "support_dialog_title": "支持开发者",
+    "work_folder_label": "工作文件夹:",
+    "work_folder_button": "选择文件夹",
+    "image_downloader_button": "提取图像",
+    "image_downloader_title": "MinerU图像提取器",
+    "overwrite_images_checkbox": "覆盖现有图像",
+    "download_images_button": "开始提取",
+    "download_complete_title": "提取完成",
+    "error_no_json_for_download": "请先选择JSON文件。",
+    "error_no_work_folder": "请先选择工作文件夹。",
+    "work_folder_help_title": "工作文件夹帮助",
+    "work_folder_help_text": "选择一个文件夹来存储提取的图像。如果该文件夹不存在，将会被创建。"
 }

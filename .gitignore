@@ -93,15 +93,8 @@ xref-*.html
 TEST_*.md
 TEMP_*.md
 DRAFT_*.md
-version_info.txt
-ABOUT_SUPPORT_FEATURE.md
-EXECUTABLE_BUILD_SUMMARY.md
-EXECUTABLE_UPDATE_SUMMARY.md
-LANGUAGE_SELECTION_FEATURE.md
-MinerU2PPTX.spec
 BMC/white-button.png
-TRANSLATION_SYSTEM.md
 requirements_installed.txt
-CREDITS_AND_DIFFERENCES.md
-CACHE_MANAGEMENT_FEATURE.md
-PPT_TO_PPTX_UPDATES.md
+
+# Sample files (too large for git)
+samples/

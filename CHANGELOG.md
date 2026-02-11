@@ -7,16 +7,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added
-- **Enhanced MinerU Integration**: Added direct links to MinerU Desktop App download
-- **Multiple MinerU Options**: Web-based extractor vs Desktop application choices
-- **Improved Documentation**: Updated all user guides with both MinerU access methods
-
 ### Planned
 - Additional AI providers integration
 - More language support (German, French, Spanish)
 - Auto-updater functionality
 - Cloud processing options
+
+---
+
+## [2.0.1] - 2026-02-11
+
+### Added
+- **PDF Image Extractor**: New utility to extract images from original PDF files using MinerU JSON bounding boxes — works offline without downloading from CDN
+- **CLI Sub-commands**: Restructured CLI with `convert` and `extract-images` sub-commands
+  - `cli.exe convert --json ... --input ... --output ...` — PPTX conversion
+  - `cli.exe extract-images --json ... --input ... --dpi 200` — image extraction
+  - `cli.exe --version` — version display
+- **Standalone CLI Executable**: New `cli.exe` console-mode executable for automation and scripting
+- **Image Extractor Dialog**: GUI dialog to extract images from PDFs with progress tracking and cancellation support
+- **Work Folder Selector**: Switchable output folder for extracted images in the GUI
+- **CLI Version Flag**: `--version` flag displays `MinerU2PPTX 2.0.1`
+
+### Changed
+- **Author Updated**: Arlinamid (Rózsavölgyi János)
+- **Version Bumped**: 2.0.1 across all version files, translations, and executables
+- **Build System Overhauled**: Both `cli.spec` and `MinerU2PPTX.spec` now exclude ~20 unused heavy packages (scipy, pandas, pyarrow, sqlalchemy, etc.)
+- **Executable Size Reduced**: ~47-48% smaller (170 MB → 87-90 MB) by stripping unused transitive dependencies
+- **Build Scripts Updated**: `build.bat` and `build_exe.py` now build both `cli.exe` and `MinerU2PPTX.exe`
+
+### Fixed
+- **Spec File Paths**: Corrected `docs/CREDITS_AND_DIFFERENCES.md` and `docs/ABOUT_SUPPORT_FEATURE.md` paths in `MinerU2PPTX.spec` (were pointing to root instead of `docs/` folder)
 
 ---
 
@@ -167,11 +187,11 @@ This project follows [Semantic Versioning](https://semver.org/):
 - **MINOR** version for backwards-compatible functionality additions  
 - **PATCH** version for backwards-compatible bug fixes
 
-**Current Status:** v2.0.0 (Major release with significant new features)
+**Current Status:** v2.0.1 (Feature update with CLI and image extraction)
 
 ---
 
-**Developer:** [arlinamid](https://github.com/arlinamid)  
+**Developer:** [Arlinamid (Rózsavölgyi János)](https://github.com/arlinamid)  
 **Repository:** https://github.com/arlinamid/MinerU2PPT  
 **Support:** [Buy Me a Coffee](https://buymeacoffee.com/arlinamid)  
 **Original Inspiration:** [JuniverseCoder/MinerU2PPT](https://github.com/JuniverseCoder/MinerU2PPT)

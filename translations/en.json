@@ -79,7 +79,7 @@
     "about_button": "About",
     "about_title": "About MinerU2PPTX",
     "about_app_name": "MinerU2PPTX Converter",
-    "about_version": "Version 1.0",
+    "about_version": "Version 2.0.1",
     "about_description": "Convert PDFs and images to PowerPoint presentations with AI-powered text correction",
     "about_developer": "Developer:",
     "about_github": "GitHub:",
@@ -87,5 +87,16 @@
     "support_button": "☕ Buy Me a Coffee",
     "github_button": "🔗 Visit GitHub",
     "support_message": "Conversion completed! If this tool helped you, consider supporting the developer:",
-    "support_dialog_title": "Support the Developer"
+    "support_dialog_title": "Support the Developer",
+    "work_folder_label": "Work Folder:",
+    "work_folder_button": "Select Folder",
+    "image_downloader_button": "Extract Images",
+    "image_downloader_title": "MinerU Image Extractor",
+    "overwrite_images_checkbox": "Overwrite existing images",
+    "download_images_button": "Start Extraction",
+    "download_complete_title": "Extraction Complete",
+    "error_no_json_for_download": "Please select a JSON file first.",
+    "error_no_work_folder": "Please select a work folder first.",
+    "work_folder_help_title": "Work Folder Help",
+    "work_folder_help_text": "Select a folder where extracted images will be stored. This folder will be created if it doesn't exist."
 }

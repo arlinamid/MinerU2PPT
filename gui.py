@@ -5,7 +5,7 @@ MinerU2PPTX GUI Application
 This enhanced version is inspired by and extends the original MinerU2PPT project:
 https://github.com/JuniverseCoder/MinerU2PPT
 
-Author: arlinamid
+Author: Arlinamid (Rózsavölgyi János)
 GitHub: https://github.com/arlinamid
 Support: https://buymeacoffee.com/arlinamid
 
@@ -27,6 +27,7 @@ import shutil
 import webbrowser
 import locale
 import asyncio
+import logging
 from tkinterdnd2 import DND_FILES, TkinterDnD
 import urllib.request
 from PIL import Image, ImageTk
@@ -34,7 +35,10 @@ from converter.generator import convert_mineru_to_ppt
 from converter.config import ai_config
 from converter.ai_services import ai_manager
 from converter.cache_manager import global_cache_manager
+from converter.image_downloader import ImageExtractor
 from translations import get_translator
+
+logger = logging.getLogger(__name__)
 
 class QueueHandler:
     def __init__(self, queue): self.queue = queue
@@ -1104,7 +1108,7 @@ class AboutDialog(tk.Toplevel):
             self._load_github_photo(photo_frame)
         except Exception as e:
             # Fallback to text if photo fails
-            photo_label = ttk.Label(photo_frame, text="👤 arlinamid", 
+            photo_label = ttk.Label(photo_frame, text="👤 Arlinamid (Rózsavölgyi János)", 
                                    font=("Arial", 14, "bold"))
             photo_label.pack()
         
@@ -1238,6 +1242,180 @@ class SupportDialog(tk.Toplevel):
         self.destroy()
 
 
+class ImageExtractorDialog(tk.Toplevel):
+    """Dialog for extracting images from PDF using MinerU JSON bounding boxes."""
+
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.parent = parent
+        self.i18n = parent.i18n
+        self.title(self.i18n['image_downloader_title'])
+        self.geometry("500x450")
+        self.resizable(True, True)
+        self.minsize(500, 400)
+
+        self.cancel_event = threading.Event()
+        self.extraction_thread = None
+
+        self.transient(parent)
+        self.grab_set()
+        self.geometry("+%d+%d" % (parent.winfo_rootx() + 50, parent.winfo_rooty() + 50))
+        self._create_widgets()
+        self.focus_set()
+
+    def _create_widgets(self):
+        main_frame = tk.Frame(self, padx=20, pady=20)
+        main_frame.pack(fill=tk.BOTH, expand=True)
+
+        # -- File info ------------------------------------------------
+        info_frame = tk.LabelFrame(main_frame, text="Files", padx=10, pady=10)
+        info_frame.pack(fill=tk.X, pady=(0, 10))
+
+        for label, var in [
+            ("JSON File:", self.parent.json_path),
+            ("Original PDF/Image:", self.parent.input_path),
+            (self.i18n['work_folder_label'], self.parent.work_folder_path),
+        ]:
+            tk.Label(info_frame, text=label, font=("Arial", 9, "bold")).pack(anchor=tk.W)
+            value = var.get() or "Not selected"
+            tk.Label(info_frame, text=value, fg="blue", wraplength=440).pack(anchor=tk.W, padx=10, pady=(0, 4))
+
+        # -- Options --------------------------------------------------
+        options_frame = tk.LabelFrame(main_frame, text="Options", padx=10, pady=5)
+        options_frame.pack(fill=tk.X, pady=(0, 10))
+        tk.Checkbutton(options_frame, text=self.i18n['overwrite_images_checkbox'],
+                        variable=self.parent.overwrite_images).pack(anchor=tk.W)
+
+        # -- Progress -------------------------------------------------
+        progress_frame = tk.LabelFrame(main_frame, text="Progress", padx=10, pady=10)
+        progress_frame.pack(fill=tk.BOTH, expand=True, pady=(0, 10))
+
+        self.status_label = tk.Label(progress_frame, text="Ready", fg="green")
+        self.status_label.pack(pady=(0, 5))
+        self.log_text = scrolledtext.ScrolledText(progress_frame, height=6, state=tk.DISABLED)
+        self.log_text.pack(fill=tk.BOTH, expand=True)
+
+        # -- Buttons --------------------------------------------------
+        btn_frame = tk.Frame(main_frame)
+        btn_frame.pack(fill=tk.X)
+
+        self.start_button = tk.Button(
+            btn_frame, text=self.i18n['download_images_button'],
+            command=self._start_extraction,
+            bg="#4CAF50", fg="white", font=("Arial", 10, "bold"), padx=20)
+        self.start_button.pack(side=tk.LEFT, padx=5)
+
+        tk.Button(btn_frame, text=self.i18n['cancel_button'],
+                  command=self._cancel, padx=20).pack(side=tk.RIGHT, padx=5)
+
+    # -- helpers ------------------------------------------------------
+    def _log(self, msg):
+        self.log_text.config(state=tk.NORMAL)
+        self.log_text.insert(tk.END, msg + "\n")
+        self.log_text.see(tk.END)
+        self.log_text.config(state=tk.DISABLED)
+        self.update_idletasks()
+
+    def _cancel(self):
+        if self.extraction_thread and self.extraction_thread.is_alive():
+            self._log("Cancelling...")
+            self.cancel_event.set()
+            self.status_label.config(text="Cancelling...", fg="orange")
+        else:
+            self.destroy()
+
+    # -- extraction ---------------------------------------------------
+    def _start_extraction(self):
+        json_path = self.parent.json_path.get()
+        original_path = self.parent.input_path.get()
+        work_folder = self.parent.work_folder_path.get()
+
+        if not json_path:
+            messagebox.showerror("Error", self.i18n['error_no_json_for_download'])
+            return
+        if not original_path or not os.path.exists(original_path):
+            messagebox.showerror("Error", "Please select the original PDF/image file.")
+            return
+        if not work_folder:
+            messagebox.showerror("Error", self.i18n['error_no_work_folder'])
+            return
+
+        self.start_button.config(state=tk.DISABLED, text="Extracting...")
+        self.status_label.config(text="Extracting from PDF...", fg="orange")
+        self.log_text.config(state=tk.NORMAL)
+        self.log_text.delete(1.0, tk.END)
+        self.log_text.config(state=tk.DISABLED)
+        self.cancel_event.clear()
+
+        self.extraction_thread = threading.Thread(target=self._run_extraction, daemon=True)
+        self.extraction_thread.start()
+
+    def _run_extraction(self):
+        try:
+            if self.cancel_event.is_set():
+                self._on_cancelled()
+                return
+
+            json_path = self.parent.json_path.get()
+            original_path = self.parent.input_path.get()
+            work_folder = self.parent.work_folder_path.get()
+            overwrite = self.parent.overwrite_images.get()
+
+            self._log("Starting image extraction from PDF...")
+            self._log(f"JSON: {os.path.basename(json_path)}")
+            self._log(f"PDF:  {os.path.basename(original_path)}")
+            self._log(f"Output: {work_folder}")
+
+            extractor = ImageExtractor(work_folder)
+            result = extractor.extract_images_from_pdf(
+                json_path, original_path, overwrite, cancel_event=self.cancel_event)
+
+            if "error" in result:
+                self._log(f"Error: {result['error']}")
+            else:
+                self._log("Extraction completed!")
+                self._log(f"Total images found: {result['total_images']}")
+                self._log(f"Extracted: {result['extracted']}")
+                self._log(f"Skipped: {result['skipped']}")
+                self._log(f"Errors: {result['errors']}")
+
+            def done():
+                self.start_button.config(state=tk.NORMAL, text=self.i18n['download_images_button'])
+                if "error" not in result and result['total_images'] > 0:
+                    self.status_label.config(text="Extraction completed!", fg="green")
+                    messagebox.showinfo(
+                        self.i18n['download_complete_title'],
+                        f"Extracted: {result['extracted']} images\n"
+                        f"Skipped: {result['skipped']} images\n"
+                        f"Errors: {result['errors']}\n"
+                        f"Folder: {result['work_folder']}")
+                elif result['total_images'] == 0 and "error" not in result:
+                    self.status_label.config(text="No images found in JSON", fg="orange")
+                else:
+                    self.status_label.config(text="Extraction failed", fg="red")
+
+            self.after(0, done)
+
+        except Exception as e:
+            if self.cancel_event.is_set():
+                self._on_cancelled()
+                return
+
+            def err():
+                self.start_button.config(state=tk.NORMAL, text=self.i18n['download_images_button'])
+                self.status_label.config(text="Extraction failed", fg="red")
+                self._log(f"Error: {e}")
+                messagebox.showerror("Error", f"Extraction failed: {e}")
+            self.after(0, err)
+
+    def _on_cancelled(self):
+        def reset():
+            self.start_button.config(state=tk.NORMAL, text=self.i18n['download_images_button'])
+            self.status_label.config(text="Cancelled", fg="red")
+            self._log("Cancelled by user.")
+        self.after(0, reset)
+
+
 class App(TkinterDnD.Tk):
     def __init__(self):
         super().__init__()
@@ -1247,8 +1425,12 @@ class App(TkinterDnD.Tk):
         self.geometry("700x600")
         self.debug_folder_path = os.path.join(os.getcwd(), "tmp")
         self.input_path, self.json_path, self.output_path = tk.StringVar(), tk.StringVar(), tk.StringVar()
+        self.work_folder_path = tk.StringVar(value=os.path.join(os.getcwd(), "minerU_images"))
         self.remove_watermark, self.generate_debug = tk.BooleanVar(value=True), tk.BooleanVar(value=False)
         self.batch_mode = tk.BooleanVar(value=False)
+        
+        # Image extractor option
+        self.overwrite_images = tk.BooleanVar(value=False)
         
         # Page selection variables
         self.page_selection_mode = tk.StringVar(value="all")  # "all", "single", "range"
@@ -1267,6 +1449,26 @@ class App(TkinterDnD.Tk):
         self.queue_handler = QueueHandler(self.log_queue)
         self._create_widgets()
         self._poll_log_queue()
+    
+    def _browse_work_folder(self):
+        """Browse and select work folder for image downloads."""
+        folder = filedialog.askdirectory(
+            title="Select Work Folder",
+            initialdir=self.work_folder_path.get() or os.getcwd()
+        )
+        if folder:
+            self.work_folder_path.set(folder)
+    
+    def _show_work_folder_help(self):
+        """Show work folder help dialog."""
+        messagebox.showinfo(
+            self.i18n['work_folder_help_title'], 
+            self.i18n['work_folder_help_text']
+        )
+    
+    def _open_image_downloader(self):
+        """Open the image extractor dialog."""
+        ImageExtractorDialog(self)
     
     def _get_language_options(self):
         """Get available language options for the combobox."""
@@ -1406,9 +1608,18 @@ class App(TkinterDnD.Tk):
         tk.Entry(self.single_mode_frame, textvariable=self.output_path).grid(row=2, column=1, sticky="ew", padx=5)
         tk.Button(self.single_mode_frame, text=self.i18n['save_as_button'], command=self._save_pptx).grid(row=2, column=2, sticky="w")
 
+        # Work folder selection
+        tk.Label(self.single_mode_frame, text=self.i18n['work_folder_label']).grid(row=3, column=0, sticky="w", pady=2)
+        work_folder_entry = tk.Entry(self.single_mode_frame, textvariable=self.work_folder_path, state="readonly")
+        work_folder_entry.grid(row=3, column=1, sticky="ew", padx=5)
+        work_folder_buttons_frame = tk.Frame(self.single_mode_frame)
+        work_folder_buttons_frame.grid(row=3, column=2, sticky="w")
+        tk.Button(work_folder_buttons_frame, text=self.i18n['work_folder_button'], command=self._browse_work_folder).pack(side=tk.LEFT)
+        tk.Button(work_folder_buttons_frame, text=self.i18n['help_button'], command=self._show_work_folder_help, width=2).pack(side=tk.LEFT)
+
         # Page Selection Frame
         page_frame = tk.LabelFrame(self.single_mode_frame, text=self.i18n.get('page_selection_label', 'Page Selection'), padx=5, pady=5)
-        page_frame.grid(row=3, column=0, columnspan=3, sticky="ew", pady=(10, 0))
+        page_frame.grid(row=4, column=0, columnspan=3, sticky="ew", pady=(10, 0))
         page_frame.grid_columnconfigure(1, weight=1)
         
         # All Pages option
@@ -1478,6 +1689,8 @@ class App(TkinterDnD.Tk):
         self.debug_button = tk.Button(button_container, text=self.i18n['debug_folder_button'], command=self._open_debug_folder, state="disabled")
         self.ai_settings_button = tk.Button(button_container, text=self.i18n['ai_settings_button'], command=self._open_ai_settings)
         self.ai_settings_button.pack(side=tk.LEFT, padx=10)
+        self.image_downloader_button = tk.Button(button_container, text=self.i18n['image_downloader_button'], command=self._open_image_downloader)
+        self.image_downloader_button.pack(side=tk.LEFT, padx=10)
 
         log_frame = tk.LabelFrame(self.content_frame, text=self.i18n['log_label'], padx=5, pady=5)
         log_frame.grid(row=3, column=0, columnspan=3, sticky="nsew")

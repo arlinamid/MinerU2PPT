@@ -108,9 +108,16 @@ This section provides instructions for running the application from source and p
     ```bash
     python gui.py
     ```
--   **To use the CLI**:
+-   **To use the CLI** (sub-commands):
     ```bash
-    python main.py --json <path_to_json> --pdf <path_to_pdf> --output <path_to_pptx> [OPTIONS]
+    # Convert PDF to PPTX
+    python main.py convert --json <path_to_json> --input <path_to_pdf> --output <path_to_pptx> [OPTIONS]
+
+    # Extract images from PDF using MinerU JSON bounding boxes
+    python main.py extract-images --json <path_to_json> --input <path_to_pdf> --output <folder> [--dpi 200] [--overwrite]
+
+    # Show version
+    python main.py --version
     ```
 
 ### Packaging as a Standalone Executable (.exe)
@@ -129,11 +136,17 @@ You can package the GUI application into a single `.exe` file for easy distribut
     -   `--name`: Sets the name of the final executable.
 
     ```bash
-    pyinstaller --windowed --onefile --name MinerU2PPT gui.py
+    # Build both executables using the provided spec files
+    pyinstaller --clean cli.spec          # → dist/cli.exe (console)
+    pyinstaller --clean MinerU2PPTX.spec  # → dist/MinerU2PPTX.exe (GUI)
+
+    # Or use the build script
+    python build_exe.py
     ```
 
-3.  **Find the Executable**:
-    Your standalone application, `MinerU2PPT.exe`, will be located in the `dist` folder.
+3.  **Find the Executables**:
+    - `dist/cli.exe` — Console CLI for scripting and automation
+    - `dist/MinerU2PPTX.exe` — Windowed GUI application
 
 ## 📚 Documentation
 
@@ -149,7 +162,8 @@ For comprehensive documentation, please visit the **[docs/](docs/)** folder:
 
 All notable changes to this project are documented in **[CHANGELOG.md](CHANGELOG.md)**:
 
-- **[v2.0.0 (Latest)](CHANGELOG.md#200---2026-02-10)** - Major release with AI integration, multi-language support, and professional GUI
+- **[v2.0.1 (Latest)](CHANGELOG.md#201---2026-02-11)** - CLI sub-commands, PDF image extractor, reduced exe size
+- **[v2.0.0](CHANGELOG.md#200---2026-02-10)** - Major release with AI integration, multi-language support, and professional GUI
 - **[All Versions](CHANGELOG.md)** - Complete version history and feature additions
 - **[Planned Features](CHANGELOG.md#unreleased)** - Upcoming enhancements and roadmap
 

@@ -79,7 +79,7 @@
     "about_button": "Névjegy",
     "about_title": "MinerU2PPTX Névjegy",
     "about_app_name": "MinerU2PPTX Konvertáló",
-    "about_version": "Verzió 1.0",
+    "about_version": "Verzió 2.0.1",
     "about_description": "PDF-ek és képek konvertálása PowerPoint prezentációkká AI szövegjavítással",
     "about_developer": "Fejlesztő:",
     "about_github": "GitHub:",
@@ -87,5 +87,16 @@
     "support_button": "☕ Vegyél egy kávét",
     "github_button": "🔗 GitHub megtekintése",
     "support_message": "Konvertálás befejezve! Ha segített ez az eszköz, fontold meg a fejlesztő támogatását:",
-    "support_dialog_title": "Támogasd a fejlesztőt"
+    "support_dialog_title": "Támogasd a fejlesztőt",
+    "work_folder_label": "Munkamappa:",
+    "work_folder_button": "Mappa kiválasztása",
+    "image_downloader_button": "Képek kinyerése",
+    "image_downloader_title": "MinerU Képkinyerő",
+    "overwrite_images_checkbox": "Meglévő képek felülírása",
+    "download_images_button": "Kinyerés indítása",
+    "download_complete_title": "Kinyerés befejezve",
+    "error_no_json_for_download": "Kérjük válasszon ki egy JSON fájlt.",
+    "error_no_work_folder": "Kérjük válasszon ki egy munkamappát.",
+    "work_folder_help_title": "Munkamappa súgó",
+    "work_folder_help_text": "Válasszon ki egy mappát, ahol a kinyert képek tárolásra kerülnek. Ez a mappa létrejön, ha még nem létezik."
 }
