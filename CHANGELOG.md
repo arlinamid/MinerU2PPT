@@ -37,6 +37,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - **Spec File Paths**: Corrected `docs/CREDITS_AND_DIFFERENCES.md` and `docs/ABOUT_SUPPORT_FEATURE.md` paths in `MinerU2PPTX.spec` (were pointing to root instead of `docs/` folder)
+- **Model Fetching**: Fixed "Model fetch failed" error for Google Gemini by including missing `websockets` dependency in the build
+- **Application Stability**: Fixed application crash in windowed mode (no console) caused by logging to non-existent stdout/stderr
+- **Async Execution**: Resolved `RuntimeWarning` messages caused by unawaited async service initialization calls
+- **Configuration Persistence**: Fixed `ai_config.json` saving to temporary directories instead of the application folder
+- **Debug Logging**: Added `ai_debug.log` generation for better troubleshooting of AI services
 
 ---
 
