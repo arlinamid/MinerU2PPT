@@ -10,6 +10,7 @@ Handles storage and retrieval of:
 
 import json
 import os
+import sys
 from typing import Dict, Any, Optional, List
 from pathlib import Path
 import logging
@@ -20,7 +21,15 @@ class AIConfig:
     """Configuration manager for AI services"""
     
     def __init__(self, config_file: str = "ai_config.json"):
-        self.config_file = Path(config_file)
+        # Determine base path for config file
+        if getattr(sys, 'frozen', False):
+            # If running as compiled executable, use the executable's directory
+            base_path = os.path.dirname(sys.executable)
+        else:
+            # If running from source, use the project root
+            base_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            
+        self.config_file = Path(base_path) / config_file
         self.config_data: Dict[str, Any] = self._load_config()
     
     def _load_config(self) -> Dict[str, Any]:

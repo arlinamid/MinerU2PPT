@@ -28,6 +28,15 @@ import webbrowser
 import locale
 import asyncio
 import logging
+
+# Patch stdout/stderr for windowed mode (pythonw.exe) where they might be None
+# This must be done before logging handlers are set up
+if sys.stdout is None:
+    class DummyStream:
+        def write(self, message): pass
+        def flush(self): pass
+    sys.stdout = DummyStream()
+    sys.stderr = DummyStream()
 from tkinterdnd2 import DND_FILES, TkinterDnD
 import urllib.request
 from PIL import Image, ImageTk
@@ -1874,15 +1883,33 @@ class App(TkinterDnD.Tk):
         threading.Thread(target=self._run_conversion_wrapper, args=(target_func, args), daemon=True).start()
 
     def _run_conversion_wrapper(self, conversion_func, args):
+        # In windowed mode (pythonw.exe), sys.stdout/stderr might be None
+        # We only want to capture them if they exist or if we are redirecting them
         old_stdout, old_stderr = sys.stdout, sys.stderr
-        sys.stdout, sys.stderr = self.queue_handler, self.queue_handler
+        
+        # Create a dummy stream if sys.stdout is None (prevent AttributeError in logging)
+        class DummyStream:
+            def write(self, message): pass
+            def flush(self): pass
+            
+        if sys.stdout is None: sys.stdout = DummyStream()
+        if sys.stderr is None: sys.stderr = DummyStream()
+
+        # Redirect to our queue handler for GUI display
+        sys.stdout = self.queue_handler
+        sys.stderr = self.queue_handler
+        
         success = False
         try:
             conversion_func(*args)
             success = True
         except Exception as e:
             self.log_queue.put(self.i18n['log_error'].format(e))
+            # Also log to file if available
+            try: logger.error(f"Conversion failed: {e}", exc_info=True)
+            except: pass
         finally:
+            # Restore original streams
             sys.stdout, sys.stderr = old_stdout, old_stderr
             self.after(0, self._finalize_gui, success)
 

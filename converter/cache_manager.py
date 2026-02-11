@@ -6,6 +6,7 @@ Manages cached corrections across all pages and conversion sessions
 
 import json
 import os
+import sys
 import threading
 import time
 from datetime import datetime, timedelta
@@ -19,7 +20,14 @@ class TextCorrectionCacheManager:
     """Global cache manager for AI text corrections"""
     
     def __init__(self, cache_file: str = "ai_text_cache.json"):
-        self.cache_file = os.path.join(os.path.dirname(__file__), "..", cache_file)
+        if getattr(sys, 'frozen', False):
+            # If running as compiled executable, use the executable's directory
+            base_dir = os.path.dirname(sys.executable)
+        else:
+            # If running from source, use the project root
+            base_dir = os.path.join(os.path.dirname(__file__), "..")
+            
+        self.cache_file = os.path.join(base_dir, cache_file)
         self.cache: Dict[str, Dict] = {}  # text -> {corrected, timestamp, provider, confidence}
         self.lock = threading.Lock()
         self.max_cache_size = 10000  # Maximum number of cached entries

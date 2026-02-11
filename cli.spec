@@ -14,6 +14,12 @@ a = Analysis(
         'converter', 'converter.generator', 'converter.ai_services',
         'converter.config', 'converter.cache_manager',
         'converter.image_downloader', 'converter.utils',
+        # AI service networking dependencies
+        'requests', 'urllib3', 'certifi', 'charset_normalizer', 'idna',
+        'httpx', 'httpcore', 'anyio', 'sniffio',
+        # AI provider packages (dynamic imports in ai_services.py)
+        'google.genai', 'google.auth', 'openai', 'anthropic', 'groq',
+        'pydantic', 'pydantic_core',
     ],
     hookspath=[],
     hooksconfig={},
@@ -25,8 +31,8 @@ a = Analysis(
         'sqlalchemy',
         'pytest', 'py', '_pytest',
         'pygments',
-        'pydantic', 'pydantic_core',
-        'anyio', 'sniffio',
+        # 'pydantic', 'pydantic_core',  # Needed by google-genai for AI services
+        # 'anyio', 'sniffio',  # Needed by httpx for AI services
         'dns', 'dnspython',
         'websockets',
         'fsspec',
@@ -36,10 +42,10 @@ a = Analysis(
         'psycopg2',
         'jinja2', 'markupsafe',
         'setuptools', 'pkg_resources', 'distutils',
-        'backports',
-        'charset_normalizer',
-        'certifi',
-        'urllib3',
+        # 'backports',  # Needed by some AI/networking deps (e.g. backports.zoneinfo)
+        # 'charset_normalizer',  # Needed by requests for AI services
+        # 'certifi',            # Needed for SSL certificate verification
+        # 'urllib3',            # Needed by requests for HTTP transport
         'matplotlib',
         'IPython', 'ipykernel', 'ipywidgets', 'jupyter',
         'notebook', 'nbconvert', 'nbformat',

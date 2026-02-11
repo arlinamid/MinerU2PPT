@@ -20,6 +20,24 @@ from dataclasses import dataclass
 # Set up logging
 logger = logging.getLogger(__name__)
 
+# Configure file logging for debugging in frozen app
+try:
+    import sys
+    import os
+    if getattr(sys, 'frozen', False):
+        log_dir = os.path.dirname(sys.executable)
+    else:
+        log_dir = os.path.dirname(os.path.abspath(__file__))
+        
+    log_file = os.path.join(log_dir, 'ai_debug.log')
+    file_handler = logging.FileHandler(log_file, encoding='utf-8')
+    file_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
+    logger.addHandler(file_handler)
+    logger.setLevel(logging.DEBUG)
+    logger.info("AI Services logging initialized")
+except Exception as e:
+    print(f"Failed to setup file logging: {e}")
+
 # AI Client imports (will be installed via requirements.txt)
 try:
     import openai
@@ -847,7 +865,19 @@ class GoogleGeminiService(AIServiceBase):
         self.client = None
     
     async def authenticate(self) -> bool:
-        """Authenticate with Google Gemini using the new google.genai package"""
+        """Authenticate with Google Gemini using the new google.genai package.
+
+        IMPORTANT:
+        - In early versions we tried to *discover* models via a direct REST
+          call (using requests to hit the public models endpoint).
+        - That REST path turned out to be brittle in frozen executables
+          (PyInstaller) even when it worked fine in a normal venv, causing
+          "Model fetch failed" in the GUI.
+        - We now avoid the REST discovery entirely and rely on a curated list
+          of known-good text models. This makes behaviour consistent between
+          source and standalone EXE while still testing the real API key via a
+          generate_content call.
+        """
         try:
             if not GOOGLE_AVAILABLE:
                 logger.error("Google GenAI library not available. Install with: pip install google-genai")
@@ -856,14 +886,27 @@ class GoogleGeminiService(AIServiceBase):
             # Create the new Google GenAI client
             self.client = genai.Client(api_key=self.api_key)
             
-            # First, discover available models from the API
-            logger.info("Discovering available models from Google Gemini API...")
-            self.available_models = await self.fetch_available_models_internal()
-            
-            if not self.available_models:
-                raise Exception("No suitable models found for text generation")
-            
-            logger.info(f"Discovered models: {self.available_models}")
+            # Static list of recommended *text* models (kept in priority order).
+            # We prefer the newer 3.x / 2.5 models you actually have access to,
+            # and fall back to the stable 2.0/1.5 families if needed.
+            # NOTE: we intentionally skip image/tts/robotics/specialized variants.
+            self.available_models = [
+                # Latest general-purpose previews
+                "gemini-3-pro-preview",
+                "gemini-3-flash-preview",
+                # Current 2.5 production models
+                "gemini-2.5-pro",
+                "gemini-2.5-flash",
+                # Stable aliases
+                "gemini-pro-latest",
+                "gemini-flash-latest",
+                # Older but widely available fallbacks
+                "gemini-2.0-flash",
+                "gemini-2.0-pro",
+                "gemini-1.5-flash",
+                "gemini-1.5-pro",
+            ]
+            logger.info(f"Using static Gemini model list: {self.available_models}")
             
             # Set model name: use configured model if it's in available list, otherwise use first available
             if self.model_name and self.model_name in self.available_models:
@@ -1048,7 +1091,22 @@ class GoogleGeminiService(AIServiceBase):
     
     def get_available_models(self) -> List[str]:
         """Get available Gemini models"""
-        return self.available_models if self.available_models else []
+        # We always keep a static list; if authentication hasn't happened yet
+        # this will still return the curated defaults.
+        if not self.available_models:
+            self.available_models = [
+                "gemini-3-pro-preview",
+                "gemini-3-flash-preview",
+                "gemini-2.5-pro",
+                "gemini-2.5-flash",
+                "gemini-pro-latest",
+                "gemini-flash-latest",
+                "gemini-2.0-flash",
+                "gemini-2.0-pro",
+                "gemini-1.5-flash",
+                "gemini-1.5-pro",
+            ]
+        return self.available_models
     
     async def fetch_available_models_internal(self) -> List[str]:
         """Internal method to fetch models using direct REST API (more reliable than SDK)"""
@@ -1132,16 +1190,14 @@ class GoogleGeminiService(AIServiceBase):
             return ["gemini-2.5-flash", "gemini-2.5-pro", "gemini-2.0-flash"]
 
     async def fetch_available_models(self) -> List[str]:
-        """Fetch available models from Google Gemini API"""
-        if not self.is_authenticated:
-            logger.warning("Not authenticated, cannot fetch models")
-            return []
-        
-        if self.available_models:
-            return self.available_models
-        
-        self.available_models = await self.fetch_available_models_internal()
-        return self.available_models
+        """Fetch available models from Google Gemini API.
+
+        For robustness in frozen executables we no longer call the REST
+        discovery endpoint here. Instead we return the same curated list used
+        during authentication, which is sufficient for the UI's model
+        dropdown and keeps behaviour identical between source and EXE builds.
+        """
+        return self.get_available_models()
     
     def get_auth_url(self) -> str:
         """Get Google AI Studio API key URL"""

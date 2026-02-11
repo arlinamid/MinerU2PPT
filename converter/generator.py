@@ -472,7 +472,7 @@ class PPTGenerator:
                 # Check if user's chosen provider is available and authenticated
                 if active_provider and active_provider in ai_manager.services:
                     # User's choice is available, use it
-                    ai_manager.set_active_service(active_provider)
+                    await ai_manager.set_active_service(active_provider)
                     logger.info(f"Active AI provider set to user's choice: {active_provider}")
                 elif active_provider and active_provider in enabled_providers:
                     # User's choice is enabled but might have failed authentication
@@ -480,7 +480,7 @@ class PPTGenerator:
                     # Don't override user's choice in config, let them know what happened
                     for provider in enabled_providers:
                         if provider in ai_manager.services:
-                            ai_manager.set_active_service(provider)
+                            await ai_manager.set_active_service(provider)
                             logger.warning(f"Using fallback provider {provider} instead of {active_provider}")
                             break
                 else:
@@ -489,7 +489,7 @@ class PPTGenerator:
                         if provider in ai_manager.services:
                             active_provider = provider
                             ai_config.set_active_provider(provider)
-                            ai_manager.set_active_service(provider)
+                            await ai_manager.set_active_service(provider)
                             logger.info(f"No valid active provider, set to first available: {active_provider}")
                             break
                 
